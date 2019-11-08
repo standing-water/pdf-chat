@@ -17,10 +17,16 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react"
+    "jsx": "react",
+    "rootDirs": [
+      "src"
+    ],
+    "baseUrl": "./src",
+    "typeRoots": [
+      "./interfaces"
+    ]
   },
   "include": [
     "src"
-  ],
-  "extends": "./tsconfig.extends.json"
+  ]
 }

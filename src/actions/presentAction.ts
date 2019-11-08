@@ -1,7 +1,4 @@
-import {
-  GET_PRESENTS_REQUEST,
-  POST_PRESENT_REQUEST
-} from "constatns/presentConstants";
+import { GET_PRESENTS_REQUEST, POST_PRESENT_REQUEST } from "constants/presentConstants";
 
 export function getPresentsRequestAction() {
   return {
