@@ -6,7 +6,7 @@ import styled, { css } from "styled-components";
 import { LIGHT_GREY } from "constants/colors";
 import { getPresentationsRequest, createPresentationRequest } from "actions/presentAction";
 
-import { LNB, Input } from "components";
+import { LNB, Input, Button } from "components";
 
 type Props = {};
 
@@ -114,7 +114,12 @@ export const LobbyPage: React.FC<Props> = () => {
         <form onSubmit={onSubmit}>
           <Input placeholder='Room title' />
           <input ref={register} type='file' name='files' accept='.pdf' />
-          <button type='submit'>test</button>
+          <Button buttonType='SECONDARY' type='submit'>
+            Cancel
+          </Button>
+          <Button buttonType='PRIMARY' type='submit'>
+            Create
+          </Button>
         </form>
       </>
     );
