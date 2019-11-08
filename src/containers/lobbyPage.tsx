@@ -1,15 +1,21 @@
-import React from "react";
+import React, { useState, useMemo, createContext } from "react";
 import styled from "styled-components";
 import { LIGHT_GREY } from "constants/colors";
 
 import { LNB } from "components";
 
-interface Props {}
+type Props = {};
+
+interface LobbyContextProps {
+  isCreateRoom: boolean;
+  setIsCreateRoom: (value: boolean) => void;
+}
 
 const Container = styled.div`
   display: flex;
   height: 100vh;
 `;
+
 const LandingContainer = styled.div`
   /* flex-basis: 300px; */
   flex-grow: 1;
@@ -20,8 +26,13 @@ const LandingContainer = styled.div`
   justify-content: flex-end;
 `;
 
+const LandingBody = styled.div`
+  width: 300px;
+  height: 100%;
+`;
+
 const MainContainer = styled.div`
-  width: calc(100% - 300px);
+  flex-grow: 1;
   height: 100%;
   padding: 5rem;
   border-radius: 10px 10px 0 0;
@@ -51,18 +62,35 @@ const Room = styled.li`
   }
 `;
 
+export const LobbyContext = createContext<LobbyContextProps>({ isCreateRoom: false, setIsCreateRoom: (value) => {} });
+
 export const LobbyPage: React.FC<Props> = () => {
+  const [isCreateRoom, setIsCreateRoom] = useState(false);
+
+  const renderCreateRoom = useMemo(() => {
+    return <div>test</div>;
+  }, []);
+
+  const renderRoomList = useMemo(() => {
+    return (
+      <>
+        <h1>Presentations</h1>
+        <RoomList>
+          <Room>test</Room>
+        </RoomList>
+      </>
+    );
+  }, []);
+
   return (
-    <Container>
-      <LNB></LNB>
-      <LandingContainer>
-        <MainContainer>
-          <h1>Presentations</h1>
-          <RoomList>
-            <Room>test</Room>
-          </RoomList>
-        </MainContainer>
-      </LandingContainer>
-    </Container>
+    <LobbyContext.Provider value={{ isCreateRoom, setIsCreateRoom }}>
+      <Container>
+        <LNB></LNB>
+        <LandingContainer>
+          <LandingBody />
+          <MainContainer>{isCreateRoom ? renderCreateRoom : renderRoomList}</MainContainer>
+        </LandingContainer>
+      </Container>
+    </LobbyContext.Provider>
   );
 };
