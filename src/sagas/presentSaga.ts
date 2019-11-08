@@ -1,7 +1,8 @@
 import { take, call, put, select, takeLatest, all } from "redux-saga/effects";
 import { API_URL } from "constants/server";
 import { postRequest } from "utils/request";
-import { POST_PRESENT_FAIL, POST_PRESENT_SUCCESS } from "constants/presentConstants";
+import { GET_PRESENTATIONS, POST_PRESENT_FAIL, POST_PRESENT_SUCCESS } from "constants/presentConstants";
+import {} from "api/";
 
 export function* postPresentSaga(action: any) {
   const { name, file } = action;
@@ -22,6 +23,10 @@ export function* postPresentSaga(action: any) {
   }
 }
 
-// export default function* presentSaga() {
-//   yield;
-// }
+function* getPresentation(action: any) {
+  yield console.log("TEST");
+}
+
+export default function* presentSaga() {
+  yield all([takeLatest(GET_PRESENTATIONS.REQUEST, getPresentation)]);
+}

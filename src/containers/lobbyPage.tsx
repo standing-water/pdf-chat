@@ -1,8 +1,10 @@
-import React, { useState, useMemo, createContext } from "react";
-import styled from "styled-components";
+import React, { useState, useMemo, createContext, useContext, useEffect, useCallback, createRef } from "react";
+import { useDispatch } from "react-redux";
+import styled, { css } from "styled-components";
 import { LIGHT_GREY } from "constants/colors";
+import { getPresentationsRequest } from "actions/presentAction";
 
-import { LNB } from "components";
+import { LNB, Input } from "components";
 
 type Props = {};
 
@@ -73,19 +75,48 @@ const Room = styled.li`
   }
 `;
 
+const Header = styled.div`
+  margin: 0.5rem 0;
+`;
+
 export const LobbyContext = createContext<LobbyContextProps>({ isCreateRoom: false, setIsCreateRoom: (value) => {} });
 
 export const LobbyPage: React.FC<Props> = () => {
   const [isCreateRoom, setIsCreateRoom] = useState(false);
+  const fileInputRef = createRef<HTMLInputElement>();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getPresentationsRequest({ test: "ttt" }));
+  }, []);
+
+  const handleChangeFile = useCallback(() => {
+    if (fileInputRef.current && fileInputRef.current.files && fileInputRef.current.files.length > 0) {
+      const file = fileInputRef.current.files[0];
+      console.log(file);
+    }
+  }, [fileInputRef]);
 
   const renderCreateRoom = useMemo(() => {
-    return <div>test</div>;
+    return (
+      <>
+        <h2>Create Room</h2>
+
+        <form>
+          <Input placeholder='Room title' />
+          <input ref={fileInputRef} type='file' accept='.pdf' onChange={handleChangeFile} />
+        </form>
+      </>
+    );
   }, []);
 
   const renderRoomList = useMemo(() => {
     return (
       <>
         <h1>Presentations</h1>
+        <Header>
+          <Input placeholder='filter...' icon='xi-search xi-x' shape='ROUND' />
+        </Header>
         <RoomList>
           <Room>test</Room>
         </RoomList>
@@ -98,9 +129,7 @@ export const LobbyPage: React.FC<Props> = () => {
       <Container>
         <LNB></LNB>
         <LandingContainer>
-          <LandingBody>
-            <h2>Create Room</h2>
-          </LandingBody>
+          <LandingBody>{renderCreateRoom}</LandingBody>
           <MainContainer isExtends={!isCreateRoom}>{renderRoomList}</MainContainer>
         </LandingContainer>
       </Container>

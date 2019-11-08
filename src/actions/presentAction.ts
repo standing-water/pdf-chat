@@ -1,10 +1,9 @@
-import { GET_PRESENTS_REQUEST, POST_PRESENT_REQUEST } from "constants/presentConstants";
+import { createAction } from "redux-actions";
+import { GET_PRESENTATIONS, POST_PRESENT_REQUEST } from "constants/presentConstants";
 
-export function getPresentsRequestAction() {
-  return {
-    type: GET_PRESENTS_REQUEST
-  };
-}
+export const getPresentationsRequest = createAction(GET_PRESENTATIONS.REQUEST);
+export const getPresentationsSuccess = createAction(GET_PRESENTATIONS.SUCCESS);
+export const getPresentationsFail = createAction(GET_PRESENTATIONS.FAIL);
 
 export function postPresentRequestAction() {
   return {
