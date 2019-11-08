@@ -1,5 +1,13 @@
 import React, { useCallback, useState } from "react";
-import { Document, Page } from "react-pdf";
+
+import { Document, Page } from "react-pdf/dist/entry.webpack";
+import {
+  MainPageWrapper,
+  PdfWrapper,
+  ChatWrapper,
+  TabWrapper,
+  TabItem
+} from "./mainPageStyle";
 
 interface Props {}
 
@@ -23,27 +31,30 @@ export const MainPage: React.FC<Props> = ({}) => {
   };
 
   return (
-    <div className='App'>
-      <nav>
-        <button onClick={goToPrevPage}>Prev</button>
-        <button onClick={goToNextPage}>Next</button>
-      </nav>
-      <Document
-        file={{
-          url: "http://localhost:7070"
-          // httpHeaders: {
-          //   "Access-Control-Request-Method": "GET",
-          //   "Access-Control-Allow-Origin": "*",
-          //   "X-CustomHeader": "40359820958024350238508234"
-          // },
-          // withCredentials: true
-        }}
-        onLoadError={(err) => console.log(err)}
-        // options={options}
-        onLoadSuccess={onDocumentLoadSuccess}
-      >
-        <Page pageNumber={pageNumber} />
-      </Document>
-    </div>
+    <MainPageWrapper>
+      <PdfWrapper>
+        <nav>
+          <button onClick={goToPrevPage}>Prev</button>
+          <button onClick={goToNextPage}>Next</button>
+        </nav>
+        <Document
+          file={{
+            url: "http://localhost:7070"
+            // httpHeaders: {
+            //   "Access-Control-Request-Method": "GET",
+            //   "Access-Control-Allow-Origin": "*",
+            //   "X-CustomHeader": "40359820958024350238508234"
+            // },
+            // withCredentials: true
+          }}
+          onLoadError={err => console.log(err)}
+          // options={options}
+          onLoadSuccess={onDocumentLoadSuccess}
+        >
+          <Page pageNumber={pageNumber} />
+        </Document>
+      </PdfWrapper>
+      <ChatWrapper></ChatWrapper>
+    </MainPageWrapper>
   );
 };
