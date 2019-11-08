@@ -1,8 +1,4 @@
-import {
-  POST_PRESENT_REQUEST,
-  POST_PRESENT_SUCCESS,
-  POST_PRESENT_FAIL
-} from "constants/presentConstants";
+import { POST_PRESENT_REQUEST, POST_PRESENT_SUCCESS, POST_PRESENT_FAIL } from "constants/presentConstants";
 
 // Initial State
 const initialState = {
