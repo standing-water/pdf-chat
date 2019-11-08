@@ -1,5 +1,10 @@
 import { combineReducers } from "redux";
+import presentReducer from "./presentReducer";
 
 export interface AppState {}
 
-export default combineReducers({});
+const rootReducer = combineReducers({
+  presentReducer: presentReducer
+});
+
+export default rootReducer;
