@@ -18,21 +18,32 @@ const Container = styled.div`
 
 const LandingContainer = styled.div`
   /* flex-basis: 300px; */
+  position: relative;
   flex-grow: 1;
   width: 300px;
   height: 100%;
   background: ${LIGHT_GREY};
   display: flex;
-  justify-content: flex-end;
+
+  /* justify-content: flex-end; */
 `;
 
 const LandingBody = styled.div`
   width: 300px;
+  padding: 1rem;
   height: 100%;
+  transition: width 0.3s;
+  will-change: width;
 `;
 
-const MainContainer = styled.div`
-  flex-grow: 1;
+const MainContainer = styled.div<{ isExtends: boolean }>`
+  /* flex-grow: 1; */
+  position: absolute;
+  right: 0;
+  z-index: 100;
+  width: ${(props) => (props.isExtends ? "100%" : "calc(100% - 300px)")};
+  will-change: width;
+  transition: 0.3s;
   height: 100%;
   padding: 5rem;
   border-radius: 10px 10px 0 0;
@@ -87,8 +98,10 @@ export const LobbyPage: React.FC<Props> = () => {
       <Container>
         <LNB></LNB>
         <LandingContainer>
-          <LandingBody />
-          <MainContainer>{isCreateRoom ? renderCreateRoom : renderRoomList}</MainContainer>
+          <LandingBody>
+            <h2>Create Room</h2>
+          </LandingBody>
+          <MainContainer isExtends={!isCreateRoom}>{renderRoomList}</MainContainer>
         </LandingContainer>
       </Container>
     </LobbyContext.Provider>

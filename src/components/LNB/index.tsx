@@ -10,7 +10,7 @@ const Container = styled.div`
   display: flex;
   align-items: center;
   flex-direction: column;
-  padding: 5rem 0;
+  padding: 2rem 0;
   width: 80px;
   height: 100%;
   background: ${DARK_GREY};
@@ -44,11 +44,11 @@ const LNBButton = styled.button`
 `;
 
 export const LNB: React.FC<Props> = () => {
-  const { setIsCreateRoom } = useContext(LobbyContext);
+  const { isCreateRoom, setIsCreateRoom } = useContext(LobbyContext);
 
   const handleCreateRoomClick = useCallback(() => {
-    setIsCreateRoom(true);
-  }, [setIsCreateRoom]);
+    setIsCreateRoom(!isCreateRoom);
+  }, [setIsCreateRoom, isCreateRoom]);
 
   const handleRoomListClick = useCallback(() => {
     setIsCreateRoom(false);
