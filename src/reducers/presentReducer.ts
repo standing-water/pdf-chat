@@ -1,4 +1,4 @@
-import { POST_PRESENT_REQUEST, POST_PRESENT_SUCCESS, POST_PRESENT_FAIL } from "constants/presentConstants";
+import { GET_PRESENTATIONS, CREATE_PRESENTATION } from "constants/presentConstants";
 
 // Initial State
 const initialState = {
@@ -9,9 +9,6 @@ const initialState = {
 
 function presentReducer(state = initialState, action: any) {
   switch (action.type) {
-    case POST_PRESENT_REQUEST:
-    case POST_PRESENT_SUCCESS:
-    case POST_PRESENT_FAIL:
     default:
       return state;
   }

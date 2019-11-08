@@ -1,8 +1,10 @@
 import React, { useState, useMemo, createContext, useContext, useEffect, useCallback, createRef } from "react";
 import { useDispatch } from "react-redux";
+import useForm from "react-hook-form";
+
 import styled, { css } from "styled-components";
 import { LIGHT_GREY } from "constants/colors";
-import { getPresentationsRequest } from "actions/presentAction";
+import { getPresentationsRequest, createPresentationRequest } from "actions/presentAction";
 
 import { LNB, Input } from "components";
 
@@ -82,29 +84,37 @@ const Header = styled.div`
 export const LobbyContext = createContext<LobbyContextProps>({ isCreateRoom: false, setIsCreateRoom: (value) => {} });
 
 export const LobbyPage: React.FC<Props> = () => {
+  const dispatch = useDispatch();
   const [isCreateRoom, setIsCreateRoom] = useState(false);
   const fileInputRef = createRef<HTMLInputElement>();
-  const dispatch = useDispatch();
+  const { register, handleSubmit, errors } = useForm();
 
   useEffect(() => {
     dispatch(getPresentationsRequest({ test: "ttt" }));
   }, []);
 
-  const handleChangeFile = useCallback(() => {
-    if (fileInputRef.current && fileInputRef.current.files && fileInputRef.current.files.length > 0) {
-      const file = fileInputRef.current.files[0];
-      console.log(file);
+  // const handleChangeFile = useCallback(() => {
+  //   if (fileInputRef.current && fileInputRef.current.files && fileInputRef.current.files.length > 0) {
+  //     const file = fileInputRef.current.files[0];
+  //     console.log(file);
+  //   }
+  // }, [fileInputRef]);
+
+  const onSubmit = handleSubmit(({ files }) => {
+    if (files.length > 0) {
+      dispatch(createPresentationRequest({ name: "TEST", file: files[0] }));
     }
-  }, [fileInputRef]);
+  });
 
   const renderCreateRoom = useMemo(() => {
     return (
       <>
         <h2>Create Room</h2>
 
-        <form>
+        <form onSubmit={onSubmit}>
           <Input placeholder='Room title' />
-          <input ref={fileInputRef} type='file' accept='.pdf' onChange={handleChangeFile} />
+          <input ref={register} type='file' name='files' accept='.pdf' />
+          <button type='submit'>test</button>
         </form>
       </>
     );

@@ -1,32 +1,27 @@
 import { take, call, put, select, takeLatest, all } from "redux-saga/effects";
 import { API_URL } from "constants/server";
 import { postRequest } from "utils/request";
-import { GET_PRESENTATIONS, POST_PRESENT_FAIL, POST_PRESENT_SUCCESS } from "constants/presentConstants";
-import {} from "api/";
+import { GET_PRESENTATIONS, CREATE_PRESENTATION } from "constants/presentConstants";
+import { createPresentation } from "apis/presentation";
+import { createPresentationFail } from "actions/presentAction";
 
-export function* postPresentSaga(action: any) {
-  const { name, file } = action;
-  const url = `${API_URL}/presentation`;
-  const payload = {
-    name,
-    file
-  };
-  try {
-    const result = yield call(postRequest, { url, payload });
-    yield put({ type: POST_PRESENT_SUCCESS });
-  } catch ({ error, response }) {
-    let failed = false;
-    if (response.data.message === "login failed") {
-      failed = true;
-    }
-    yield put({ type: POST_PRESENT_FAIL, failed });
-  }
-}
-
-function* getPresentation(action: any) {
+function* watchGetPresentation(action: any) {
   yield console.log("TEST");
 }
 
+function* watchCreatePresentation(action: ActionWithPayload<{ name: string; file: File }>) {
+  const { name, file } = action.payload;
+  try {
+    const test = yield call(createPresentation, name, file);
+    console.log(test);
+  } catch (err) {
+    yield put(createPresentationFail());
+  }
+}
+
 export default function* presentSaga() {
-  yield all([takeLatest(GET_PRESENTATIONS.REQUEST, getPresentation)]);
+  yield all([
+    takeLatest(GET_PRESENTATIONS.REQUEST, watchGetPresentation),
+    takeLatest(CREATE_PRESENTATION.REQUEST, watchCreatePresentation)
+  ]);
 }
