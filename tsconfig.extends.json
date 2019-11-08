@@ -2,18 +2,7 @@
   "compilerOptions": {
     "rootDirs": ["src"],
     "baseUrl": "./src",
-    "paths": {
-      "@api": ["./api"],
-      "@api/*": ["./api/*"],
-      "@components": ["./components"],
-      "@components/*": ["./components/*"],
-      "@constants": ["./constants"],
-      "@constants/*": ["./constants/*"],
-      "@reducers": ["./reducers"],
-      "@reducers/*": ["./reducers/*"],
-      "@sagas": ["./sagas"],
-      "@sagas/*": ["./sagas/*"]
-    },
+    "paths": {},
     "typeRoots": ["./interfaces"]
   }
 }

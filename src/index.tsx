@@ -6,8 +6,8 @@ import { createStore, applyMiddleware } from "redux";
 import createSagaMiddleware from "redux-saga";
 import { Provider } from "react-redux";
 
-import rootReducer from "@reducers/rootReducer";
-import rootSaga from "@sagas/rootSaga";
+import rootReducer from "reducers/rootReducer";
+import rootSaga from "sagas/rootSaga";
 
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
