@@ -1,6 +1,7 @@
 import React, { useState, useMemo, createContext, useContext, useEffect, useCallback, createRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import useForm from "react-hook-form";
+import { useHistory } from "react-router-dom";
 
 import Spinner from "react-activity/lib/Spinner";
 
@@ -75,6 +76,7 @@ const Room = styled.li`
   border-radius: 4px;
   transition: 0.3s;
   padding: 0.5rem;
+  cursor: pointer;
 
   &:hover {
     transition: 0.3s;
@@ -101,11 +103,13 @@ export const LobbyContext = createContext<LobbyContextProps>({ isCreateRoom: fal
 
 export const LobbyPage: React.FC<Props> = () => {
   const dispatch = useDispatch();
+  const history = useHistory();
   const [isCreateRoom, setIsCreateRoom] = useState(false);
   const fileInputRef = createRef<HTMLInputElement>();
   const { register, handleSubmit, errors } = useForm();
   const presentationStore = useSelector((state: AppState) => state.presentation);
 
+  console.log(presentationStore);
   useEffect(() => {
     dispatch(getPresentationsRequest());
   }, []);
@@ -122,6 +126,13 @@ export const LobbyPage: React.FC<Props> = () => {
       dispatch(createPresentationRequest({ name: title, file: files[0] }));
     }
   });
+
+  const handleClickRoom = useCallback(
+    (enterId: string) => () => {
+      history.push(`/presentation/${enterId}`);
+    },
+    [history]
+  );
 
   const renderCreateRoom = useMemo(() => {
     return (
@@ -157,18 +168,19 @@ export const LobbyPage: React.FC<Props> = () => {
         ) : (
           <RoomList>
             {presentationStore.rooms.map((item) => (
-              <Room key={item.enterId}>{item.name}</Room>
+              <Room key={item.enterId} onClick={handleClickRoom(item.enterId)}>
+                {item.name}
+              </Room>
             ))}
           </RoomList>
         )}
       </>
     );
-  }, [presentationStore.rooms, presentationStore.isFetchingRooms]);
+  }, [presentationStore.rooms, presentationStore.isFetchingRooms, handleClickRoom]);
 
   return (
     <LobbyContext.Provider value={{ isCreateRoom, setIsCreateRoom }}>
       <Container>
-        <LNB></LNB>
         <ExtendsContainer>
           <CreateRoomContainer>{renderCreateRoom}</CreateRoomContainer>
           <MainContainer isExtends={!isCreateRoom}>{renderRoomList}</MainContainer>

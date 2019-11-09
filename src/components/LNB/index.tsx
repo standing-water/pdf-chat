@@ -1,4 +1,5 @@
 import React, { useContext, useCallback } from "react";
+import { useHistory } from "react-router-dom";
 import styled from "styled-components";
 import { DARK_GREY, LIGHT_GREY } from "constants/colors";
 
@@ -44,15 +45,18 @@ const LNBButton = styled.button`
 `;
 
 export const LNB: React.FC<Props> = () => {
+  const history = useHistory();
   const { isCreateRoom, setIsCreateRoom } = useContext(LobbyContext);
 
   const handleCreateRoomClick = useCallback(() => {
+    history.push("/");
     setIsCreateRoom(!isCreateRoom);
-  }, [setIsCreateRoom, isCreateRoom]);
+  }, [history, setIsCreateRoom, isCreateRoom]);
 
   const handleRoomListClick = useCallback(() => {
+    history.push("/");
     setIsCreateRoom(false);
-  }, [setIsCreateRoom]);
+  }, [history, setIsCreateRoom]);
 
   return (
     <Container>

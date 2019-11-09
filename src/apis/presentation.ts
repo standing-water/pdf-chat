@@ -15,3 +15,5 @@ export const createPresentation = (name: string, file: File) => {
     }
   });
 };
+
+export const enterRoom = (enterId: string) => axios.get(`${API_URL}/presentation/${enterId}`);
