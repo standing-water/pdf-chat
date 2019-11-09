@@ -1,12 +1,18 @@
 import {
   GET_PRESENTATIONS,
-  CREATE_PRESENTATION
+  CREATE_PRESENTATION,
+  CREATE_QUESTION
 } from "constants/presentConstants";
 
 // Initial State
 const initialState: PresentationState = {
   isFetchingRooms: false,
   rooms: []
+const initialState = {
+  presentation: {
+    id: null
+  },
+  questions: []
 };
 
 function presentReducer(state: PresentationState = initialState, action: any): PresentationState {
@@ -25,6 +31,8 @@ function presentReducer(state: PresentationState = initialState, action: any): P
         isFetchingRooms: false
       };
     }
+    case CREATE_QUESTION:
+
     default:
       return state;
   }
