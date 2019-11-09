@@ -6,15 +6,15 @@ export const MainPageWrapper = styled.div`
   display: flex;
   flex-direction: column;
   width: 100vw;
-  height: 100vh;
+  height: 99vh;
 `;
 
 export const PdfWrapper = styled.div`
+  padding-top: 20px;
   display: flex;
   position: relative;
   flex-direction: column;
   height: 250px;
-  background-color: red;
 `;
 
 export const PdfDocument = styled(Document)`
@@ -26,8 +26,6 @@ export const PdfContentWrapper = styled.div`
   background-color: black;
   justify-content: center;
   align-items: center;
-  flex: 1 1 auto;
-  overflow-y: scroll;
 `;
 
 export const ChatWrapper = styled.div`
@@ -42,12 +40,18 @@ export const ChatContentWrapper = styled.div`
   flex-direction: column;
   position: relative;
   height: calc(100% - 60px - 40px);
+  overflow-x: hidden;
+  border: 1px red solid;
+
   overflow-y: scroll;
+  white-space: nowrap;
 `;
 
 export const InputWrapper = styled.div`
-  position: fixed;
-  bottom: 0;
+  display: flex;
+  position: sticky;
+  position: -webkit-sticky;
+  bottom: 100;
   width: 100%;
   padding: 0 15px;
 `;
@@ -97,6 +101,9 @@ export const ChatBubble = styled.div<{ mine: boolean }>`
   background: ${props => (props.mine ? DARK_MAIN_COLOR : "#eee")};
   background-attachment: fixed;
   position: relative;
+  word-break: break-all;
+  word-wrap: break-word;
+  white-space: pre;
 
   :before {
     content: "";

@@ -5,6 +5,7 @@ import React, {
   useRef,
   createRef
 } from "react";
+import { useRouteMatch } from "react-router-dom";
 import {
   animateScroll,
   Events,
@@ -48,7 +49,7 @@ import {
   ChatBubbleWrapper,
   ChatWriter
 } from "./mobileMainPageStyle";
-import { createQuestionRequest } from "actions/presentAction";
+import { createQuestionRequest, enterRoomRequest } from "actions/presentAction";
 
 interface Props {}
 
@@ -68,8 +69,11 @@ export const MobileMainPage: React.FC<Props> = ({}) => {
   //   console.log("Test");
   // };
 
+  const match = useRouteMatch<{ enterId: string }>();
+
   const containerRef = createRef<HTMLDivElement>();
   const chatContainerRef = createRef<HTMLDivElement>();
+  const inputRef = createRef<HTMLInputElement>();
   const [questionInput, setQuestionInput] = useState();
   const [pageNumber, setPageNumber] = useState(1);
   const [_numPages, setNumPages] = useState(null);
@@ -86,24 +90,37 @@ export const MobileMainPage: React.FC<Props> = ({}) => {
     (state: AppState) => state.presentation
   );
   const { questions } = presentationStore;
+  const { isFetchingCurrentRoom, currentRoom } = useSelector(
+    (state: AppState) => state.presentation
+  );
 
   useEffect(() => {
-    async function test() {
-      const res = await axios.get("http://localhost:7070", {
-        headers: {
-          Accept: "application/pdf"
-        },
-        responseType: "blob"
-      });
-      const blob = new Blob([res.data], { type: "application/pdf" });
-      var fileURL = URL.createObjectURL(blob);
-      setPdf(fileURL);
+    async function fetchPDF() {
+      if (currentRoom) {
+        console.log(currentRoom.fileUrl);
+        const res = await axios.get(currentRoom.fileUrl, {
+          headers: {
+            Accept: "application/pdf"
+          },
+          responseType: "blob"
+        });
+        const blob = new Blob([res.data], { type: "application/pdf" });
+        var fileURL = URL.createObjectURL(blob);
+        setPdf(fileURL);
+      }
     }
+    fetchPDF();
+
     Events.scrollEvent.register("begin", function(to, element) {});
     Events.scrollEvent.register("end", function(to, element) {});
     scrollSpy.update();
-    test();
-  }, []);
+  }, [currentRoom]);
+
+  useEffect(() => {
+    if (match && match.params) {
+      dispatch(enterRoomRequest({ enterId: match.params.enterId }));
+    }
+  }, [match, enterRoomRequest]);
 
   const onDocumentLoadSuccess = ({ numPages }: { numPages: any }) => {
     // console.log("success");
@@ -132,11 +149,11 @@ export const MobileMainPage: React.FC<Props> = ({}) => {
     // animateScroll.scrollToBottom({});
     // // Somewhere else, even another file
     animateScroll.scrollTo(2000, {
-      duration: 100,
+      duration: 800,
       delay: 0,
       smooth: true,
       containerId: "chatContainer",
-      offset: 50 // Scrolls to element + 50 pixels down the page
+      offset: 200 // Scrolls to element + 50 pixels down the page
     });
   };
 
@@ -145,8 +162,16 @@ export const MobileMainPage: React.FC<Props> = ({}) => {
   }, []);
 
   const onClickSendQuestion = () => {
-    dispatch(createQuestionRequest({ present_id: 1, page: 4, content: "df" }));
+    dispatch(
+      createQuestionRequest({
+        present_id: 1,
+        page: 4,
+        content:
+          "dfajksdfkjaksdjflkajsdlkfjasdlkjasdsdkfaksjdfklajsdflkjasdkfjasdklfjaskdlfjasdklfjasdklfjaskdlfjf\nskldfkjs"
+      })
+    );
     scrollToBottom();
+    inputRef.current!.focus();
   };
 
   const renderChat = () => {
@@ -206,6 +231,7 @@ export const MobileMainPage: React.FC<Props> = ({}) => {
       <Element name="input">
         <InputWrapper>
           <Input
+            ref={inputRef}
             shape="ROUND"
             buttonIcon="xi-arrow-up"
             onClickButton={onClickSendQuestion}
