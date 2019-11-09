@@ -29,6 +29,8 @@ const StyledButton = styled.button<{ buttonType: Props["buttonType"]; styles?: P
   > i {
     margin-right: 4px;
   }
+
+  ${(props) => props.styles}
 `;
 
 export const Button = React.forwardRef<HTMLButtonElement, Props>(

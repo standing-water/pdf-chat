@@ -11,7 +11,10 @@ export const createPresentation = (name: string, file: File) =>
     },
     {
       headers: {
-        "Access-Control-Allow-Origin": "*"
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,OPTIONS",
+        Accept: "application/json",
+        "Content-Type": "application/json"
       }
     }
   );

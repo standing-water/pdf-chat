@@ -103,3 +103,12 @@ export const TabItem = styled.div`
   flex: 1;
   border: 2px solid green;
 `;
+
+export const ModalBody = styled.div`
+  display: flex;
+`;
+
+export const ModalFooter = styled.div`
+  display: flex;
+  justify-content: center;
+`;
