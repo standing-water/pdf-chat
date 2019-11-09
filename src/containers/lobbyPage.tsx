@@ -8,6 +8,7 @@ import { getPresentationsRequest, createPresentationRequest } from "actions/pres
 
 import { LNB, Input, Button } from "components";
 import { getQRCode } from "apis/qrcode";
+import { useDropzone } from "react-dropzone";
 
 type Props = {};
 
@@ -101,6 +102,11 @@ export const LobbyPage: React.FC<Props> = () => {
   //   }
   // }, [fileInputRef]);
 
+  const onDrop = useCallback((acceptedFiles) => {
+    // Do something with the files
+  }, []);
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
+
   const onSubmit = handleSubmit(({ files }) => {
     if (files.length > 0) {
       dispatch(createPresentationRequest({ name: "TEST", file: files[0] }));
@@ -115,6 +121,14 @@ export const LobbyPage: React.FC<Props> = () => {
         <form onSubmit={onSubmit}>
           <Input placeholder='Room title' />
           <input ref={register} type='file' name='files' accept='.pdf' />
+          <div {...getRootProps()}>
+            <input {...getInputProps()} />
+            {isDragActive ? (
+              <p>Drop the files here ...</p>
+            ) : (
+              <p>Drag 'n' drop some files here, or click to select files</p>
+            )}
+          </div>
           <Button buttonType='SECONDARY' type='submit'>
             Cancel
           </Button>
