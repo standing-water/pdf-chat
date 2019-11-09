@@ -16,8 +16,20 @@ import {
   ChatWriter
 } from "./mobileMainPageStyle";
 import { Input } from "components";
+import { render } from "react-dom";
 
 interface Props {}
+
+export const tabData = [
+  {
+    id: 0,
+    icon: "xi-message-o"
+  },
+  {
+    id: 1,
+    icon: "xi-help-o"
+  }
+];
 
 export const MobileMainPage: React.FC<Props> = ({}) => {
   // const onDocumentLoadSuccess = () => {
@@ -25,6 +37,7 @@ export const MobileMainPage: React.FC<Props> = ({}) => {
   // };
   const [pageNumber, setPageNumber] = useState(1);
   const [_numPages, setNumPages] = useState(null);
+  const [tabState, setTabState] = useState(0);
 
   const onDocumentLoadSuccess = ({ numPages }: { numPages: any }) => {
     console.log("success");
@@ -36,6 +49,21 @@ export const MobileMainPage: React.FC<Props> = ({}) => {
   };
   const goToNextPage = () => {
     setPageNumber(pageNumber + 1);
+  };
+
+  const renderChat = () => {
+    return (
+      <>
+        <ChatBubbleWrapper mine={true}>
+          <ChatBubble mine={true}>잘 만드셨네요? 어떻게 만드셨나요?</ChatBubble>
+          <ChatWriter mine={true}>신현종</ChatWriter>
+        </ChatBubbleWrapper>
+        <ChatBubbleWrapper mine={false}>
+          <ChatBubble mine={false}>하하하하하</ChatBubble>
+          <ChatWriter mine={false}>신현종</ChatWriter>
+        </ChatBubbleWrapper>
+      </>
+    );
   };
 
   return (
@@ -66,21 +94,18 @@ export const MobileMainPage: React.FC<Props> = ({}) => {
       </PdfWrapper>
       <ChatWrapper>
         <TabWrapper>
-          <TabItem>채팅</TabItem>
-          <TabItem>질문</TabItem>
+          {tabData.map(x => (
+            <TabItem
+              onClick={() => setTabState(x.id)}
+              tabId={x.id}
+              tabState={tabState}
+            >
+              <i className={x.icon}></i>
+            </TabItem>
+          ))}
         </TabWrapper>
         <ChatContentWrapper>
-          <ChatBubbleWrapper mine={true}>
-            <ChatBubble mine={true}>
-              잘 만드셨네요? 어떻게 만드셨나요?
-            </ChatBubble>
-            <ChatWriter mine={true}>신현종</ChatWriter>
-          </ChatBubbleWrapper>
-
-          <ChatBubbleWrapper mine={false}>
-            <ChatBubble mine={false}>하하하하하</ChatBubble>
-            <ChatWriter mine={false}>신현종</ChatWriter>
-          </ChatBubbleWrapper>
+          {tabState === 0 ? renderChat() : <div>질문</div>}
         </ChatContentWrapper>
         <InputWrapper>
           <Input shape="ROUND"></Input>

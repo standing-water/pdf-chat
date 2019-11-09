@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { Document } from "react-pdf";
+import { DARK_MAIN_COLOR } from "constants/colors";
 
 export const MainPageWrapper = styled.div`
   display: flex;
@@ -45,22 +46,32 @@ export const ChatContentWrapper = styled.div`
 
 export const InputWrapper = styled.div`
   flex: 1; /* border: 2px solid brown; */
-  padding: 0 10px;
+  padding: 0 15px;
 `;
 
 export const TabWrapper = styled.div`
-  flex: 1;
+  flex: 1.2;
   display: flex;
   flex-direction: row;
   width: 100%;
+  -webkit-box-shadow: 0px 3px 5px 0px rgba(0, 0, 0, 0.15);
+  -moz-box-shadow: 0px 3px 5px 0px rgba(0, 0, 0, 0.15);
+  box-shadow: 0px 3px 5px 0px rgba(0, 0, 0, 0.15);
 `;
 
-export const TabItem = styled.div`
+export const TabItem = styled.div<{ tabId: number; tabState: number }>`
   display: flex;
   justify-content: center;
   align-items: center;
   flex: 1;
-  border: 2px solid green;
+  border-right: 1px solid #eee;
+  font-size: 20px;
+  cursor: pointer;
+  color: ${props =>
+    props.tabState === props.tabId ? DARK_MAIN_COLOR : "black"};
+  &:last-child {
+    border-right: none;
+  }
 `;
 
 export const ChatBubbleWrapper = styled.div<{ mine: boolean }>`
