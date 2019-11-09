@@ -1,6 +1,5 @@
 import React, { useState, useMemo, createContext, useContext, useEffect, useCallback, createRef } from "react";
-import { useSelector } from "react-redux";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import useForm from "react-hook-form";
 
 import Spinner from "react-activity/lib/Spinner";
@@ -108,7 +107,7 @@ export const LobbyPage: React.FC<Props> = () => {
   const presentationStore = useSelector((state: AppState) => state.presentation);
 
   useEffect(() => {
-    dispatch(getPresentationsRequest({ test: "ttt" }));
+    dispatch(getPresentationsRequest());
   }, []);
 
   // const handleChangeFile = useCallback(() => {
@@ -118,9 +117,9 @@ export const LobbyPage: React.FC<Props> = () => {
   //   }
   // }, [fileInputRef]);
 
-  const onSubmit = handleSubmit(({ files }) => {
+  const onSubmit = handleSubmit(({ title, files }) => {
     if (files.length > 0) {
-      dispatch(createPresentationRequest({ name: "TEST", file: files[0] }));
+      dispatch(createPresentationRequest({ name: title, file: files[0] }));
     }
   });
 
@@ -130,7 +129,7 @@ export const LobbyPage: React.FC<Props> = () => {
         <h2>Create Room</h2>
 
         <form onSubmit={onSubmit}>
-          <Input placeholder='Room title' />
+          <Input placeholder='Room title' name='title' ref={register} />
           <input ref={register} type='file' name='files' accept='.pdf' />
           <Button buttonType='SECONDARY' type='submit'>
             Cancel

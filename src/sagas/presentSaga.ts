@@ -3,7 +3,7 @@ import { API_URL } from "constants/server";
 import { postRequest } from "utils/request";
 import { GET_PRESENTATIONS, CREATE_PRESENTATION } from "constants/presentConstants";
 import { getPresentation, createPresentation } from "apis/presentation";
-import { getPresentationsSuccess, createPresentationFail } from "actions/presentAction";
+import { getPresentationsRequest, getPresentationsSuccess, createPresentationFail } from "actions/presentAction";
 
 function* watchGetPresentation(action: any) {
   try {
@@ -16,7 +16,7 @@ function* watchCreatePresentation(action: ActionWithPayload<{ name: string; file
   const { name, file } = action.payload;
   try {
     const test = yield call(createPresentation, name, file);
-    console.log(test);
+    yield put(getPresentationsRequest());
   } catch (err) {
     yield put(createPresentationFail());
   }
