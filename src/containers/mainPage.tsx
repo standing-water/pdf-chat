@@ -26,7 +26,9 @@ import {
   ModalFooter
 } from "./mainPageStyle";
 import { getQRCode } from "apis/qrcode";
+import { sendWS } from "apis/presentation";
 import { enterRoomRequest, loginRequest } from "actions/presentAction";
+import { WS_URL } from "constants/server";
 
 interface Props {}
 
@@ -43,9 +45,10 @@ export const MainPage: React.FC<Props> = ({}) => {
     height: 0
   });
 
-  const { isFetchingCurrentRoom, currentRoom } = useSelector((state: AppState) => state.presentation);
+  const { isFetchingCurrentRoom, currentRoom, ws, user } = useSelector((state: AppState) => state.presentation);
 
   useEffect(() => {
+    console.log("TEST");
     async function fetchPDF() {
       if (currentRoom) {
         const res = await axios.get(currentRoom.fileUrl, {
@@ -67,10 +70,30 @@ export const MainPage: React.FC<Props> = ({}) => {
   }, [currentRoom, dispatch]);
 
   useEffect(() => {
+    if (user && currentRoom) {
+      sendWS(ws, {
+        message: "subscribe",
+        parameter: {
+          presentation_id: currentRoom.id,
+          token: user.token
+        }
+      });
+    }
+  }, [user, currentRoom]);
+
+  useEffect(() => {
+    return () => {
+      sendWS(ws, {
+        message: "unsubscribe"
+      });
+    };
+  });
+
+  useEffect(() => {
     if (match && match.params) {
       dispatch(enterRoomRequest({ enterId: match.params.enterId }));
     }
-  }, [match, enterRoomRequest]);
+  }, []);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     switch (e.keyCode) {
@@ -98,10 +121,6 @@ export const MainPage: React.FC<Props> = ({}) => {
   const handleResize = useCallback((width: number, height: number) => {
     setResizePosition({ width, height });
   }, []);
-
-  // useEffect(() => {
-
-  // }, []);
 
   const handleClickShare = useCallback(() => {
     setIsModalOpen(true);

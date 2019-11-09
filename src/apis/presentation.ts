@@ -41,3 +41,5 @@ export const login = (presentationId: number) =>
       "Content-Type": "application/x-www-form-urlencoded"
     }
   });
+
+export const sendWS = (ws: WebSocket, data: { message: string; parameter?: any }) => ws.send(JSON.stringify(data));

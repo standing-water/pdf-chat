@@ -1,7 +1,9 @@
 import { GET_PRESENTATIONS, CREATE_PRESENTATION, CREATE_QUESTION, ENTER_ROOM, LOGIN } from "constants/presentConstants";
+import { WS_URL } from "constants/server";
 
 // Initial State
 const initialState: PresentationState = {
+  ws: new WebSocket(WS_URL),
   user: null,
   isFetchingRooms: false,
   isFetchingCurrentRoom: false,

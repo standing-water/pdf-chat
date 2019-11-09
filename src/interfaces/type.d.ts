@@ -28,6 +28,7 @@ interface User {
 }
 
 type PresentationState = {
+  ws: WebSocket;
   isFetchingRooms: boolean;
   isFetchingCurrentRoom: boolean;
   rooms: Room[];

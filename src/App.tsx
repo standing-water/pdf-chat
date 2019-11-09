@@ -1,5 +1,5 @@
 import React, { useState, createContext, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Route, Switch, withRouter, RouteComponentProps } from "react-router-dom";
 import { isMobile } from "react-device-detect";
 import { LNB } from "components";
@@ -16,6 +16,23 @@ export const AppContext = createContext<LobbyContextProps>({ isCreateRoom: false
 
 const App: React.FC<Props> = () => {
   const [isCreateRoom, setIsCreateRoom] = useState(false);
+  const { ws } = useSelector((state: AppState) => state.presentation);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      const data = {
+        message: "ping",
+        parameter: {
+          timestamp: new Date().getTime()
+        }
+      };
+      ws.send(JSON.stringify(data));
+    }, 30000);
+
+    return () => {
+      clearInterval(id);
+    };
+  }, [ws]);
 
   return (
     <AppContext.Provider value={{ isCreateRoom, setIsCreateRoom }}>
