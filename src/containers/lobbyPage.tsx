@@ -7,6 +7,7 @@ import { LIGHT_GREY } from "constants/colors";
 import { getPresentationsRequest, createPresentationRequest } from "actions/presentAction";
 
 import { LNB, Input, Button } from "components";
+import { getQRCode } from "apis/qrcode";
 
 type Props = {};
 
@@ -20,7 +21,7 @@ const Container = styled.div`
   height: 100vh;
 `;
 
-const LandingContainer = styled.div`
+const ExtendsContainer = styled.div`
   /* flex-basis: 300px; */
   position: relative;
   flex-grow: 1;
@@ -32,7 +33,7 @@ const LandingContainer = styled.div`
   /* justify-content: flex-end; */
 `;
 
-const LandingBody = styled.div`
+const CreateRoomContainer = styled.div`
   width: 300px;
   padding: 1rem;
   height: 100%;
@@ -120,6 +121,7 @@ export const LobbyPage: React.FC<Props> = () => {
           <Button buttonType='PRIMARY' type='submit'>
             Create
           </Button>
+          <img src={getQRCode("https://naver.com")} />
         </form>
       </>
     );
@@ -143,10 +145,10 @@ export const LobbyPage: React.FC<Props> = () => {
     <LobbyContext.Provider value={{ isCreateRoom, setIsCreateRoom }}>
       <Container>
         <LNB></LNB>
-        <LandingContainer>
-          <LandingBody>{renderCreateRoom}</LandingBody>
+        <ExtendsContainer>
+          <CreateRoomContainer>{renderCreateRoom}</CreateRoomContainer>
           <MainContainer isExtends={!isCreateRoom}>{renderRoomList}</MainContainer>
-        </LandingContainer>
+        </ExtendsContainer>
       </Container>
     </LobbyContext.Provider>
   );
