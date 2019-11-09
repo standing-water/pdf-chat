@@ -6,6 +6,7 @@ type Props = {
   shape?: "SQUARE" | "ROUND";
   icon?: string;
   buttonIcon?: string;
+  onClickButton?: () => void;
   styles?: SimpleInterpolation;
 } & InputHTMLAttributes<HTMLInputElement>;
 
@@ -59,22 +60,28 @@ const Icon = styled.i`
   margin-right: 4px;
 `;
 
-export const Input: React.FC<Props> = ({
-  shape = "SQUARE",
-  icon,
-  styles,
-  buttonIcon,
-  ...inputProps
-}) => {
-  return (
-    <Wrapper styles={styles} shape={shape}>
-      {icon && <Icon className={icon} />}
-      <StyledInput {...inputProps}></StyledInput>
-      {buttonIcon && (
-        <StyledButton>
-          <i className={buttonIcon}></i>
-        </StyledButton>
-      )}
-    </Wrapper>
-  );
-};
+export const Input = React.forwardRef<HTMLInputElement, Props>(
+  (
+    {
+      shape = "SQUARE",
+      icon,
+      styles,
+      buttonIcon,
+      onClickButton,
+      ...inputProps
+    },
+    ref
+  ) => {
+    return (
+      <Wrapper styles={styles} shape={shape}>
+        {icon && <Icon className={icon} />}
+        <StyledInput ref={ref} {...inputProps}></StyledInput>
+        {buttonIcon && (
+          <StyledButton onClick={onClickButton}>
+            <i className={buttonIcon}></i>
+          </StyledButton>
+        )}
+      </Wrapper>
+    );
+  }
+);

@@ -10,9 +10,14 @@ interface Room {
   name: string;
 }
 
+interface Question {
+  content: string;
+}
+
 type PresentationState = {
   isFetchingRooms: boolean;
   rooms: Room[];
+  questions: Question[];
 };
 
 interface AppState {

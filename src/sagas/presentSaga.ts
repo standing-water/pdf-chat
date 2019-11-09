@@ -1,9 +1,18 @@
 import { take, call, put, select, takeLatest, all } from "redux-saga/effects";
-import { API_URL } from "constants/server";
-import { postRequest } from "utils/request";
-import { GET_PRESENTATIONS, CREATE_PRESENTATION } from "constants/presentConstants";
+
+import {
+  GET_PRESENTATIONS,
+  CREATE_PRESENTATION,
+  CREATE_QUESTION
+} from "constants/presentConstants";
 import { getPresentation, createPresentation } from "apis/presentation";
-import { getPresentationsRequest, getPresentationsSuccess, createPresentationFail } from "actions/presentAction";
+import {
+  getPresentationsRequest,
+  getPresentationsSuccess,
+  createPresentationFail,
+  createQuestionSuccess,
+  createQuestionFail
+} from "actions/presentAction";
 
 function* watchGetPresentation(action: any) {
   try {
@@ -31,17 +40,19 @@ function* watchCreateQuestion(
     content: string;
   }>
 ) {
-  const { present_id, page } = action.payload;
+  const { present_id, page, content } = action.payload;
+  // const question = yield call(createQuestion, present_id, page, content)
   try {
-    yield put(createPresentationSuccess());
+    yield put(createQuestionSuccess(content));
   } catch (err) {
-    yield put(createPresentationFail());
+    yield put(createQuestionFail());
   }
 }
 
 export default function* presentSaga() {
   yield all([
     takeLatest(GET_PRESENTATIONS.REQUEST, watchGetPresentation),
-    takeLatest(CREATE_PRESENTATION.REQUEST, watchCreatePresentation)
+    takeLatest(CREATE_PRESENTATION.REQUEST, watchCreatePresentation),
+    takeLatest(CREATE_QUESTION.REQUEST, watchCreateQuestion)
   ]);
 }

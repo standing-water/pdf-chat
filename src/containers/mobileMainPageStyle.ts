@@ -8,6 +8,7 @@ export const MainPageWrapper = styled.div`
   width: 100vw;
   height: 100vh;
   overflow-x: hidden;
+  overflow-y: hidden;
 `;
 
 export const PdfWrapper = styled.div`
@@ -15,7 +16,6 @@ export const PdfWrapper = styled.div`
   position: relative;
   flex-direction: column;
   flex: 1;
-  height: 100%;
 `;
 
 export const PdfDocument = styled(Document)`
@@ -43,10 +43,13 @@ export const ChatContentWrapper = styled.div`
   flex-direction: column;
   position: relative;
   flex: 10;
+  background-color: gainsboro;
 `;
 
 export const InputWrapper = styled.div`
-  flex: 1.5; /* border: 2px solid brown; */
+  position: fixed;
+  bottom: 0;
+  width: 100%;
   padding: 0 15px;
 `;
 

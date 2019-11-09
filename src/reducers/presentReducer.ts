@@ -7,15 +7,18 @@ import {
 // Initial State
 const initialState: PresentationState = {
   isFetchingRooms: false,
-  rooms: []
-const initialState = {
-  presentation: {
-    id: null
-  },
-  questions: []
+  rooms: [],
+  questions: [
+    {
+      content: "Hi"
+    }
+  ]
 };
 
-function presentReducer(state: PresentationState = initialState, action: any): PresentationState {
+function presentReducer(
+  state: PresentationState = initialState,
+  action: any
+): PresentationState {
   switch (action.type) {
     case GET_PRESENTATIONS.REQUEST: {
       return {
@@ -31,7 +34,13 @@ function presentReducer(state: PresentationState = initialState, action: any): P
         isFetchingRooms: false
       };
     }
-    case CREATE_QUESTION:
+    case CREATE_QUESTION.SUCCESS: {
+      console.log(action);
+      return {
+        ...state,
+        questions: [...state.questions, { content: action.payload }]
+      };
+    }
 
     default:
       return state;

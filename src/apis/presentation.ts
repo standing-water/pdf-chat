@@ -15,3 +15,24 @@ export const createPresentation = (name: string, file: File) => {
     }
   });
 };
+export const createQuestion = (
+  present_id: number,
+  page: number,
+  content: string
+) => {
+  const formData = new FormData();
+  formData.append("page", page.toString());
+  formData.append("content", content);
+  return axios.post(
+    `${API_URL}/presentation/${present_id}/question`,
+    formData,
+    {
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,OPTIONS",
+        Accept: "application/json",
+        "Content-Type": "multipart/form-data"
+      }
+    }
+  );
+};

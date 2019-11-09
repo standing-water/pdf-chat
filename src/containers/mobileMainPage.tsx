@@ -1,6 +1,7 @@
 import React, { useCallback, useState, useEffect, createRef } from "react";
 import { Input, Button } from "components";
 import { render } from "react-dom";
+import { useDispatch, useSelector } from "react-redux";
 import ReactResizeDetector from "react-resize-detector";
 import axios from "axios";
 import { css } from "styled-components";
@@ -34,6 +35,7 @@ import {
   ChatBubbleWrapper,
   ChatWriter
 } from "./mobileMainPageStyle";
+import { createQuestionRequest } from "actions/presentAction";
 
 interface Props {}
 
@@ -53,6 +55,7 @@ export const MobileMainPage: React.FC<Props> = ({}) => {
   //   console.log("Test");
   // };
   const containerRef = createRef<HTMLDivElement>();
+  const [questionInput, setQuestionInput] = useState();
   const [pageNumber, setPageNumber] = useState(1);
   const [_numPages, setNumPages] = useState(null);
   const [tabState, setTabState] = useState(0);
@@ -63,6 +66,11 @@ export const MobileMainPage: React.FC<Props> = ({}) => {
     width: 0,
     height: 0
   });
+  const dispatch = useDispatch();
+  const presentationStore = useSelector(
+    (state: AppState) => state.presentation
+  );
+  const { questions } = presentationStore;
 
   useEffect(() => {
     async function test() {
@@ -124,17 +132,19 @@ export const MobileMainPage: React.FC<Props> = ({}) => {
     setIsModalOpen(false);
   }, []);
 
+  const onClickSendQuestion = () => {
+    dispatch(createQuestionRequest({ present_id: 1, page: 4, content: "df" }));
+  };
+
   const renderChat = () => {
     return (
       <>
-        <ChatBubbleWrapper mine={true}>
-          <ChatBubble mine={true}>잘 만드셨네요? 어떻게 만드셨나요?</ChatBubble>
-          <ChatWriter mine={true}>신현종</ChatWriter>
-        </ChatBubbleWrapper>
-        <ChatBubbleWrapper mine={false}>
-          <ChatBubble mine={false}>하하하하하</ChatBubble>
-          <ChatWriter mine={false}>신현종</ChatWriter>
-        </ChatBubbleWrapper>
+        {questions.map(x => (
+          <ChatBubbleWrapper mine={true}>
+            <ChatBubble mine={true}>{x.content}</ChatBubble>
+            <ChatWriter mine={true}>신현종</ChatWriter>
+          </ChatBubbleWrapper>
+        ))}
       </>
     );
   };
@@ -186,7 +196,6 @@ export const MobileMainPage: React.FC<Props> = ({}) => {
           </Button>
         </PdfFooter>
       </PdfWrapper>
-
       <ChatWrapper>
         <TabWrapper>
           {tabData.map(x => (
@@ -202,10 +211,14 @@ export const MobileMainPage: React.FC<Props> = ({}) => {
         <ChatContentWrapper>
           {tabState === 0 ? renderChat() : <div>질문</div>}
         </ChatContentWrapper>
-        <InputWrapper>
-          <Input shape="ROUND" buttonIcon="xi-arrow-up"></Input>
-        </InputWrapper>
       </ChatWrapper>
+      <InputWrapper>
+        <Input
+          shape="ROUND"
+          buttonIcon="xi-arrow-up"
+          onClickButton={onClickSendQuestion}
+        ></Input>
+      </InputWrapper>
     </MainPageWrapper>
   );
 };
