@@ -60,7 +60,7 @@ export const LNB: React.FC<Props> = () => {
         <i className='xi-list xi-x' />
       </LNBButton>
       <LNBButton onClick={handleCreateRoomClick}>
-        <i className='xi-plus xi-x' />
+        <i className={!isCreateRoom ? "xi-plus xi-x" : "xi-angle-left xi-x"} />
       </LNBButton>
     </Container>
   );
