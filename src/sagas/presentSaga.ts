@@ -12,11 +12,28 @@ function* watchGetPresentation(action: any) {
   } catch (err) {}
 }
 
-function* watchCreatePresentation(action: ActionWithPayload<{ name: string; file: File }>) {
+function* watchCreatePresentation(
+  action: ActionWithPayload<{ name: string; file: File }>
+) {
   const { name, file } = action.payload;
   try {
     const test = yield call(createPresentation, name, file);
     yield put(getPresentationsRequest());
+  } catch (err) {
+    yield put(createPresentationFail());
+  }
+}
+
+function* watchCreateQuestion(
+  action: ActionWithPayload<{
+    present_id: number;
+    page: number;
+    content: string;
+  }>
+) {
+  const { present_id, page } = action.payload;
+  try {
+    yield put(createPresentationSuccess());
   } catch (err) {
     yield put(createPresentationFail());
   }
