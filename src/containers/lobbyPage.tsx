@@ -1,13 +1,18 @@
 import React, { useState, useMemo, createContext, useContext, useEffect, useCallback, createRef } from "react";
+import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import useForm from "react-hook-form";
 
+import Spinner from "react-activity/lib/Spinner";
+
 import styled, { css } from "styled-components";
-import { LIGHT_GREY } from "constants/colors";
+
+import { LIGHT_GREY, MAIN_COLOR } from "constants/colors";
 import { getPresentationsRequest, createPresentationRequest } from "actions/presentAction";
 
 import { LNB, Input, Button } from "components";
 import { getQRCode } from "apis/qrcode";
+import "react-activity/dist/react-activity.css";
 
 type Props = {};
 
@@ -76,10 +81,21 @@ const Room = styled.li`
     transition: 0.3s;
     box-shadow: 0px 10px 10px rgba(0, 0, 0, 0.1);
   }
+
+  & + & {
+    margin-top: 16px;
+  }
 `;
 
 const Header = styled.div`
-  margin: 0.5rem 0;
+  margin: 1rem 0;
+`;
+
+const LoadingContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100px;
 `;
 
 export const LobbyContext = createContext<LobbyContextProps>({ isCreateRoom: false, setIsCreateRoom: (value) => {} });
@@ -89,6 +105,7 @@ export const LobbyPage: React.FC<Props> = () => {
   const [isCreateRoom, setIsCreateRoom] = useState(false);
   const fileInputRef = createRef<HTMLInputElement>();
   const { register, handleSubmit, errors } = useForm();
+  const presentationStore = useSelector((state: AppState) => state.presentation);
 
   useEffect(() => {
     dispatch(getPresentationsRequest({ test: "ttt" }));
@@ -134,12 +151,20 @@ export const LobbyPage: React.FC<Props> = () => {
         <Header>
           <Input placeholder='filter...' icon='xi-search xi-x' shape='ROUND' />
         </Header>
-        <RoomList>
-          <Room>test</Room>
-        </RoomList>
+        {presentationStore.isFetchingRooms ? (
+          <LoadingContainer>
+            <Spinner color={MAIN_COLOR} size={32} speed={1} animating={true} />
+          </LoadingContainer>
+        ) : (
+          <RoomList>
+            {presentationStore.rooms.map((item) => (
+              <Room key={item.enterId}>{item.name}</Room>
+            ))}
+          </RoomList>
+        )}
       </>
     );
-  }, []);
+  }, [presentationStore.rooms, presentationStore.isFetchingRooms]);
 
   return (
     <LobbyContext.Provider value={{ isCreateRoom, setIsCreateRoom }}>

@@ -2,11 +2,14 @@ import { take, call, put, select, takeLatest, all } from "redux-saga/effects";
 import { API_URL } from "constants/server";
 import { postRequest } from "utils/request";
 import { GET_PRESENTATIONS, CREATE_PRESENTATION } from "constants/presentConstants";
-import { createPresentation } from "apis/presentation";
-import { createPresentationFail } from "actions/presentAction";
+import { getPresentation, createPresentation } from "apis/presentation";
+import { getPresentationsSuccess, createPresentationFail } from "actions/presentAction";
 
 function* watchGetPresentation(action: any) {
-  yield console.log("TEST");
+  try {
+    const result = yield call(getPresentation);
+    yield put(getPresentationsSuccess({ rooms: result.data.data }));
+  } catch (err) {}
 }
 
 function* watchCreatePresentation(action: ActionWithPayload<{ name: string; file: File }>) {
