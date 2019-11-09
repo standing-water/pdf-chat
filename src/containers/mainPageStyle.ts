@@ -72,6 +72,7 @@ export const PdfFooter = styled.div`
   justify-content: space-between;
   align-items: center;
   height: 70px;
+  padding: 0 2rem;
 `;
 
 export const ChatWrapper = styled.div`

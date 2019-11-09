@@ -1,11 +1,10 @@
 import React, { useCallback, useState, useEffect, createRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useRouteMatch } from "react-router-dom";
 import ReactResizeDetector from "react-resize-detector";
 import axios from "axios";
 import { css } from "styled-components";
-import Fullscreen from "react-full-screen";
 import screenfull from "screenfull";
-
-import { debounce } from "lodash";
 
 import { Document, Page } from "react-pdf/dist/entry.webpack";
 import Modal from "react-modal";
@@ -27,35 +26,47 @@ import {
   ModalFooter
 } from "./mainPageStyle";
 import { getQRCode } from "apis/qrcode";
+import { enterRoomRequest } from "../actions/presentAction";
 
 interface Props {}
 
 export const MainPage: React.FC<Props> = ({}) => {
+  const dispatch = useDispatch();
+  const match = useRouteMatch<{ enterId: string }>();
   const containerRef = createRef<HTMLDivElement>();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [pageNumber, setPageNumber] = useState(1);
   const [_numPages, setNumPages] = useState(null);
-  const [isFS, setIsFS] = useState(false);
   const [Pdf, setPdf] = useState<string>("");
   const [resizePosition, setResizePosition] = useState({
     width: 0,
     height: 0
   });
 
+  const { isFetchingCurrentRoom, currentRoom } = useSelector((state: AppState) => state.presentation);
+
   useEffect(() => {
-    async function test() {
-      const res = await axios.get("http://localhost:7070", {
-        headers: {
-          Accept: "application/pdf"
-        },
-        responseType: "blob"
-      });
-      const blob = new Blob([res.data], { type: "application/pdf" });
-      var fileURL = URL.createObjectURL(blob);
-      setPdf(fileURL);
+    async function fetchPDF() {
+      if (currentRoom) {
+        const res = await axios.get(currentRoom.fileUrl, {
+          headers: {
+            Accept: "application/pdf"
+          },
+          responseType: "blob"
+        });
+        const blob = new Blob([res.data], { type: "application/pdf" });
+        var fileURL = URL.createObjectURL(blob);
+        setPdf(fileURL);
+      }
     }
-    test();
-  }, []);
+    fetchPDF();
+  }, [currentRoom]);
+
+  useEffect(() => {
+    if (match && match.params) {
+      dispatch(enterRoomRequest({ enterId: match.params.enterId }));
+    }
+  }, [match, enterRoomRequest]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     switch (e.keyCode) {
@@ -102,6 +113,10 @@ export const MainPage: React.FC<Props> = ({}) => {
     setIsModalOpen(false);
   }, []);
 
+  if (isFetchingCurrentRoom || !currentRoom) {
+    return null;
+  }
+
   return (
     <>
       <MainPageWrapper onKeyDown={handleKeyDown}>
@@ -120,26 +135,32 @@ export const MainPage: React.FC<Props> = ({}) => {
             </PdfContentWrapper>
           </ReactResizeDetector>
           <PdfFooter>
-            <Button
-              buttonType='SECONDARY'
-              icon='xi-share-alt-o xi-x'
-              onClick={handleClickShare}
-              styles={css`
-                font-size: 18px;
-              `}
-            >
-              Share
-            </Button>
-            <Button
-              buttonType='SECONDARY'
-              icon='xi-expand-square xi-x'
-              onClick={handleClickFullscreen}
-              styles={css`
-                font-size: 18px;
-              `}
-            >
-              Full screen
-            </Button>
+            <div>
+              <h2>{currentRoom.name}</h2>
+            </div>
+            <div>
+              <Button
+                buttonType='SECONDARY'
+                icon='xi-share-alt-o xi-x'
+                onClick={handleClickShare}
+                styles={css`
+                  font-size: 18px;
+                  margin-right: 4px;
+                `}
+              >
+                Share
+              </Button>
+              <Button
+                buttonType='SECONDARY'
+                icon='xi-expand-square xi-x'
+                onClick={handleClickFullscreen}
+                styles={css`
+                  font-size: 18px;
+                `}
+              >
+                Full screen
+              </Button>
+            </div>
           </PdfFooter>
         </PdfWrapper>
 

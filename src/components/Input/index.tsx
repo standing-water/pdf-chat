@@ -39,11 +39,13 @@ const Icon = styled.i`
   margin-right: 4px;
 `;
 
-export const Input: React.FC<Props> = ({ shape = "SQUARE", icon, styles, ...inputProps }) => {
-  return (
-    <Wrapper styles={styles} shape={shape}>
-      {icon && <Icon className={icon} />}
-      <StyledInput {...inputProps}></StyledInput>
-    </Wrapper>
-  );
-};
+export const Input = React.forwardRef<HTMLInputElement, Props>(
+  ({ shape = "SQUARE", icon, styles, ...inputProps }, ref) => {
+    return (
+      <Wrapper styles={styles} shape={shape}>
+        {icon && <Icon className={icon} />}
+        <StyledInput ref={ref} {...inputProps}></StyledInput>
+      </Wrapper>
+    );
+  }
+);

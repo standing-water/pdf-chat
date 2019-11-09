@@ -1,7 +1,7 @@
 import axios from "axios";
 import { API_URL } from "constants/server";
 
-export const getPresentation = () => {};
+export const getPresentation = () => axios.get(`${API_URL}/presentation`);
 export const createPresentation = (name: string, file: File) => {
   const formData = new FormData();
   formData.append("name", name);
@@ -15,3 +15,5 @@ export const createPresentation = (name: string, file: File) => {
     }
   });
 };
+
+export const enterRoom = (enterId: string) => axios.get(`${API_URL}/presentation/${enterId}`);
