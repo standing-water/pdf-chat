@@ -5,6 +5,7 @@ import { MAIN_COLOR, DARK_GREY, DARK_MAIN_COLOR, LIGHT_GREY } from "constants/co
 
 type Props = {
   buttonType: "PRIMARY" | "SECONDARY";
+  icon?: string;
   styles?: SimpleInterpolation;
 } & ButtonHTMLAttributes<HTMLButtonElement>;
 
@@ -24,12 +25,21 @@ const StyledButton = styled.button<{ buttonType: Props["buttonType"]; styles?: P
   &:focus {
     outline: none;
   }
+
+  > i {
+    margin-right: 4px;
+  }
+
+  ${(props) => props.styles}
 `;
 
-export const Button = React.forwardRef<HTMLButtonElement, Props>(({ buttonType, styles, children, ...props }, ref) => {
-  return (
-    <StyledButton ref={ref} buttonType={buttonType} styles={styles} {...props}>
-      {children}
-    </StyledButton>
-  );
-});
+export const Button = React.forwardRef<HTMLButtonElement, Props>(
+  ({ buttonType, styles, children, icon, ...props }, ref) => {
+    return (
+      <StyledButton ref={ref} buttonType={buttonType} styles={styles} {...props}>
+        {icon && <i className={icon} />}
+        {children}
+      </StyledButton>
+    );
+  }
+);
