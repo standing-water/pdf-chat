@@ -1,4 +1,7 @@
-import { GET_PRESENTATIONS, CREATE_PRESENTATION } from "constants/presentConstants";
+import {
+  GET_PRESENTATIONS,
+  CREATE_PRESENTATION
+} from "constants/presentConstants";
 
 // Initial State
 const initialState: PresentationState = {

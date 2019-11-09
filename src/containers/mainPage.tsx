@@ -109,20 +109,28 @@ export const MainPage: React.FC<Props> = ({}) => {
           <ReactResizeDetector handleWidth handleHeight onResize={handleResize}>
             <PdfContentWrapper>
               <PaginatorContainer>
-                <Paginator direction='LEFT' onClick={goToPrevPage}></Paginator>
-                <Paginator direction='RIGHT' onClick={goToNextPage}></Paginator>
+                <Paginator direction="LEFT" onClick={goToPrevPage}></Paginator>
+                <Paginator direction="RIGHT" onClick={goToNextPage}></Paginator>
               </PaginatorContainer>
-              <Document file={Pdf} onLoadError={(err) => console.log(err)} onLoadSuccess={onDocumentLoadSuccess}>
+              <Document
+                file={Pdf}
+                onLoadError={err => console.log(err)}
+                onLoadSuccess={onDocumentLoadSuccess}
+              >
                 <PdfContent>
-                  <Page pageNumber={pageNumber} width={resizePosition.width - 10} height={resizePosition.height - 10} />
+                  <Page
+                    pageNumber={pageNumber}
+                    width={resizePosition.width - 10}
+                    height={resizePosition.height - 10}
+                  />
                 </PdfContent>
               </Document>
             </PdfContentWrapper>
           </ReactResizeDetector>
           <PdfFooter>
             <Button
-              buttonType='SECONDARY'
-              icon='xi-share-alt-o xi-x'
+              buttonType="SECONDARY"
+              icon="xi-share-alt-o xi-x"
               onClick={handleClickShare}
               styles={css`
                 font-size: 18px;
@@ -131,8 +139,8 @@ export const MainPage: React.FC<Props> = ({}) => {
               Share
             </Button>
             <Button
-              buttonType='SECONDARY'
-              icon='xi-expand-square xi-x'
+              buttonType="SECONDARY"
+              icon="xi-expand-square xi-x"
               onClick={handleClickFullscreen}
               styles={css`
                 font-size: 18px;
@@ -166,7 +174,7 @@ export const MainPage: React.FC<Props> = ({}) => {
             <img src={getQRCode("https://naver.com")} />
           </ModalBody>
           <ModalFooter>
-            <Button buttonType='SECONDARY' onClick={handleCloseModal}>
+            <Button buttonType="SECONDARY" onClick={handleCloseModal}>
               Close
             </Button>
           </ModalFooter>
