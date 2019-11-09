@@ -3,7 +3,7 @@ import { useHistory } from "react-router-dom";
 import styled from "styled-components";
 import { DARK_GREY, LIGHT_GREY } from "constants/colors";
 
-import { LobbyContext } from "containers/lobbyPage";
+import { AppContext } from "App";
 
 type Props = {};
 
@@ -13,7 +13,7 @@ const Container = styled.div`
   flex-direction: column;
   padding: 2rem 0;
   width: 80px;
-  height: 100%;
+  height: 100vh;
   background: ${DARK_GREY};
 `;
 
@@ -46,7 +46,7 @@ const LNBButton = styled.button`
 
 export const LNB: React.FC<Props> = () => {
   const history = useHistory();
-  const { isCreateRoom, setIsCreateRoom } = useContext(LobbyContext);
+  const { isCreateRoom, setIsCreateRoom } = useContext(AppContext);
 
   const handleCreateRoomClick = useCallback(() => {
     history.push("/");

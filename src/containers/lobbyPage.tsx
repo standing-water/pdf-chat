@@ -5,14 +5,15 @@ import { useHistory } from "react-router-dom";
 
 import Spinner from "react-activity/lib/Spinner";
 
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 
 import { LIGHT_GREY, MAIN_COLOR } from "constants/colors";
 import { getPresentationsRequest, createPresentationRequest } from "actions/presentAction";
 
-import { LNB, Input, Button } from "components";
+import { Input, Button } from "components";
 import { getQRCode } from "apis/qrcode";
 import "react-activity/dist/react-activity.css";
+import { AppContext } from "App";
 
 type Props = {};
 
@@ -23,6 +24,7 @@ interface LobbyContextProps {
 
 const Container = styled.div`
   display: flex;
+  width: 100%;
   height: 100vh;
 `;
 
@@ -104,12 +106,11 @@ export const LobbyContext = createContext<LobbyContextProps>({ isCreateRoom: fal
 export const LobbyPage: React.FC<Props> = () => {
   const dispatch = useDispatch();
   const history = useHistory();
-  const [isCreateRoom, setIsCreateRoom] = useState(false);
+  const { isCreateRoom, setIsCreateRoom } = useContext(AppContext);
   const fileInputRef = createRef<HTMLInputElement>();
   const { register, handleSubmit, errors } = useForm();
   const presentationStore = useSelector((state: AppState) => state.presentation);
 
-  console.log(presentationStore);
   useEffect(() => {
     dispatch(getPresentationsRequest());
   }, []);
@@ -130,8 +131,9 @@ export const LobbyPage: React.FC<Props> = () => {
   const handleClickRoom = useCallback(
     (enterId: string) => () => {
       history.push(`/presentation/${enterId}`);
+      setIsCreateRoom(false);
     },
-    [history]
+    [history, setIsCreateRoom]
   );
 
   const renderCreateRoom = useMemo(() => {
@@ -179,13 +181,11 @@ export const LobbyPage: React.FC<Props> = () => {
   }, [presentationStore.rooms, presentationStore.isFetchingRooms, handleClickRoom]);
 
   return (
-    <LobbyContext.Provider value={{ isCreateRoom, setIsCreateRoom }}>
-      <Container>
-        <ExtendsContainer>
-          <CreateRoomContainer>{renderCreateRoom}</CreateRoomContainer>
-          <MainContainer isExtends={!isCreateRoom}>{renderRoomList}</MainContainer>
-        </ExtendsContainer>
-      </Container>
-    </LobbyContext.Provider>
+    <Container>
+      <ExtendsContainer>
+        <CreateRoomContainer>{renderCreateRoom}</CreateRoomContainer>
+        <MainContainer isExtends={!isCreateRoom}>{renderRoomList}</MainContainer>
+      </ExtendsContainer>
+    </Container>
   );
 };

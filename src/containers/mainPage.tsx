@@ -8,7 +8,7 @@ import screenfull from "screenfull";
 
 import { Document, Page } from "react-pdf/dist/entry.webpack";
 import Modal from "react-modal";
-import { Button, LNB } from "components";
+import { Button } from "components";
 import {
   MainPageWrapper,
   PdfWrapper,
@@ -120,7 +120,6 @@ export const MainPage: React.FC<Props> = ({}) => {
   return (
     <>
       <MainPageWrapper onKeyDown={handleKeyDown}>
-        <LNB />
         <PdfWrapper ref={containerRef}>
           <ReactResizeDetector handleWidth handleHeight onResize={handleResize}>
             <PdfContentWrapper>
