@@ -1,11 +1,16 @@
-import { GET_PRESENTATIONS, CREATE_PRESENTATION, ENTER_ROOM } from "constants/presentConstants";
+import { GET_PRESENTATIONS, CREATE_PRESENTATION, CREATE_QUESTION, ENTER_ROOM } from "constants/presentConstants";
 
 // Initial State
 const initialState: PresentationState = {
   isFetchingRooms: false,
   isFetchingCurrentRoom: false,
   rooms: [],
-  currentRoom: null
+  currentRoom: null,
+  questions: [
+    {
+      content: "Hi"
+    }
+  ]
 };
 
 function presentReducer(state: PresentationState = initialState, action: any): PresentationState {
@@ -36,6 +41,13 @@ function presentReducer(state: PresentationState = initialState, action: any): P
         ...state,
         currentRoom: roomDetail,
         isFetchingCurrentRoom: false
+      };
+    }
+    case CREATE_QUESTION.SUCCESS: {
+      console.log(action);
+      return {
+        ...state,
+        questions: [...state.questions, { content: action.payload }]
       };
     }
 

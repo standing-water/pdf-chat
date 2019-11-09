@@ -18,11 +18,16 @@ interface RoomDetail {
   name: string;
 }
 
+interface Question {
+  content: string;
+}
+
 type PresentationState = {
   isFetchingRooms: boolean;
   isFetchingCurrentRoom: boolean;
   rooms: Room[];
   currentRoom: RoomDetail | null;
+  questions: Question[];
 };
 
 interface AppState {
