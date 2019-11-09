@@ -7,33 +7,32 @@ export const MainPageWrapper = styled.div`
   flex-direction: column;
   width: 100vw;
   height: 100vh;
-  overflow-x: hidden;
-  overflow-y: hidden;
 `;
 
 export const PdfWrapper = styled.div`
   display: flex;
   position: relative;
   flex-direction: column;
-  flex: 1;
+  height: 250px;
+  background-color: red;
 `;
 
 export const PdfDocument = styled(Document)`
   width: 100%;
-  /* height: 300px; */
 `;
 
 export const PdfContentWrapper = styled.div`
   display: flex;
-  overflow-y: auto;
   background-color: black;
   justify-content: center;
   align-items: center;
+  flex: 1 1 auto;
+  overflow-y: scroll;
 `;
 
 export const ChatWrapper = styled.div`
   display: flex;
-  flex: 5;
+  height: calc(100% - 250px);
   flex-direction: column;
   position: relative;
 `;
@@ -42,8 +41,8 @@ export const ChatContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
   position: relative;
-  flex: 10;
-  background-color: gainsboro;
+  height: calc(100% - 60px - 40px);
+  overflow-y: scroll;
 `;
 
 export const InputWrapper = styled.div`
@@ -54,7 +53,7 @@ export const InputWrapper = styled.div`
 `;
 
 export const TabWrapper = styled.div`
-  flex: 1.2;
+  height: 60px;
   display: flex;
   flex-direction: row;
   width: 100%;
@@ -81,7 +80,8 @@ export const TabItem = styled.div<{ tabId: number; tabState: number }>`
 export const ChatBubbleWrapper = styled.div<{ mine: boolean }>`
   margin-top: 10px;
   margin-bottom: 5px;
-  display: inline-flex;
+  display: flex;
+  flex-shrink: 0;
   align-self: ${props => (props.mine ? "flex-end" : "flex-start")};
   margin-right: ${props => (props.mine ? "4%" : null)};
   margin-left: ${props => (props.mine ? null : "4%")};
@@ -94,10 +94,7 @@ export const ChatBubble = styled.div<{ mine: boolean }>`
   border-radius: 20px;
   padding: 8px 15px;
   color: ${props => (props.mine ? "white" : "black")};
-  background: ${props =>
-    props.mine
-      ? "linear-gradient(to bottom, #00d0ea 0%, #0085d1 100%)"
-      : "#eee"};
+  background: ${props => (props.mine ? DARK_MAIN_COLOR : "#eee")};
   background-attachment: fixed;
   position: relative;
 
@@ -110,10 +107,7 @@ export const ChatBubble = styled.div<{ mine: boolean }>`
     left: ${props => (props.mine ? null : "-7px")};
     height: 20px;
     width: 20px;
-    background: ${props =>
-      props.mine
-        ? "linear-gradient(to bottom, #00d0ea 0%, #0085d1 100%)"
-        : "#eee"};
+    background: ${props => (props.mine ? DARK_MAIN_COLOR : "#eee")};
     background-attachment: fixed;
     border-bottom-left-radius: 15px;
   }

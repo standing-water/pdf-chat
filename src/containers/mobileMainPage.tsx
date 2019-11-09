@@ -1,4 +1,17 @@
-import React, { useCallback, useState, useEffect, createRef } from "react";
+import React, {
+  useCallback,
+  useState,
+  useEffect,
+  useRef,
+  createRef
+} from "react";
+import {
+  animateScroll,
+  Events,
+  scrollSpy,
+  scroller,
+  Element
+} from "react-scroll";
 import { Input, Button } from "components";
 import { render } from "react-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -54,7 +67,9 @@ export const MobileMainPage: React.FC<Props> = ({}) => {
   // const onDocumentLoadSuccess = () => {
   //   console.log("Test");
   // };
+
   const containerRef = createRef<HTMLDivElement>();
+  const chatContainerRef = createRef<HTMLDivElement>();
   const [questionInput, setQuestionInput] = useState();
   const [pageNumber, setPageNumber] = useState(1);
   const [_numPages, setNumPages] = useState(null);
@@ -84,6 +99,9 @@ export const MobileMainPage: React.FC<Props> = ({}) => {
       var fileURL = URL.createObjectURL(blob);
       setPdf(fileURL);
     }
+    Events.scrollEvent.register("begin", function(to, element) {});
+    Events.scrollEvent.register("end", function(to, element) {});
+    scrollSpy.update();
     test();
   }, []);
 
@@ -110,30 +128,25 @@ export const MobileMainPage: React.FC<Props> = ({}) => {
     }
   };
 
+  const scrollToBottom = () => {
+    // animateScroll.scrollToBottom({});
+    // // Somewhere else, even another file
+    animateScroll.scrollTo(2000, {
+      duration: 100,
+      delay: 0,
+      smooth: true,
+      containerId: "chatContainer",
+      offset: 50 // Scrolls to element + 50 pixels down the page
+    });
+  };
+
   const handleResize = useCallback((width: number, height: number) => {
     setResizePosition({ width, height });
   }, []);
 
-  // useEffect(() => {
-
-  // }, []);
-
-  const handleClickShare = useCallback(() => {
-    setIsModalOpen(true);
-  }, []);
-
-  const handleClickFullscreen = useCallback(() => {
-    if (screenfull.isEnabled && containerRef.current) {
-      screenfull.toggle(containerRef.current);
-    }
-  }, [containerRef]);
-
-  const handleCloseModal = useCallback(() => {
-    setIsModalOpen(false);
-  }, []);
-
   const onClickSendQuestion = () => {
     dispatch(createQuestionRequest({ present_id: 1, page: 4, content: "df" }));
+    scrollToBottom();
   };
 
   const renderChat = () => {
@@ -173,28 +186,6 @@ export const MobileMainPage: React.FC<Props> = ({}) => {
             </Document>
           </PdfContentWrapper>
         </ReactResizeDetector>
-        <PdfFooter>
-          <Button
-            buttonType="SECONDARY"
-            icon="xi-share-alt-o xi-x"
-            onClick={handleClickShare}
-            styles={css`
-              font-size: 12px;
-            `}
-          >
-            Share
-          </Button>
-          <Button
-            buttonType="SECONDARY"
-            icon="xi-expand-square xi-x"
-            onClick={handleClickFullscreen}
-            styles={css`
-              font-size: 12px;
-            `}
-          >
-            Full screen
-          </Button>
-        </PdfFooter>
       </PdfWrapper>
       <ChatWrapper>
         <TabWrapper>
@@ -208,17 +199,19 @@ export const MobileMainPage: React.FC<Props> = ({}) => {
             </TabItem>
           ))}
         </TabWrapper>
-        <ChatContentWrapper>
+        <ChatContentWrapper id="chatContainer" ref={chatContainerRef}>
           {tabState === 0 ? renderChat() : <div>질문</div>}
         </ChatContentWrapper>
       </ChatWrapper>
-      <InputWrapper>
-        <Input
-          shape="ROUND"
-          buttonIcon="xi-arrow-up"
-          onClickButton={onClickSendQuestion}
-        ></Input>
-      </InputWrapper>
+      <Element name="input">
+        <InputWrapper>
+          <Input
+            shape="ROUND"
+            buttonIcon="xi-arrow-up"
+            onClickButton={onClickSendQuestion}
+          ></Input>
+        </InputWrapper>
+      </Element>
     </MainPageWrapper>
   );
 };
