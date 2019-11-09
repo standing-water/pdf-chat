@@ -160,9 +160,6 @@ export const LobbyPage: React.FC<Props> = () => {
     return (
       <>
         <h1>Presentations</h1>
-        <Header>
-          <Input placeholder='filter...' icon='xi-search xi-x' shape='ROUND' />
-        </Header>
         {presentationStore.isFetchingRooms ? (
           <LoadingContainer>
             <Spinner color={MAIN_COLOR} size={32} speed={1} animating={true} />
