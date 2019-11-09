@@ -1,5 +1,5 @@
 import { createAction } from "redux-actions";
-import { GET_PRESENTATIONS, CREATE_PRESENTATION, ENTER_ROOM, CREATE_QUESTION } from "constants/presentConstants";
+import { GET_PRESENTATIONS, CREATE_PRESENTATION, ENTER_ROOM, CREATE_QUESTION, LOGIN } from "constants/presentConstants";
 
 export const getPresentationsRequest = createAction(GET_PRESENTATIONS.REQUEST);
 export const getPresentationsSuccess = createAction<{ rooms: Room[] }>(GET_PRESENTATIONS.SUCCESS);
@@ -24,3 +24,7 @@ export const createQuestionRequest = createAction<{
 
 export const createQuestionSuccess = createAction(CREATE_QUESTION.SUCCESS);
 export const createQuestionFail = createAction(CREATE_QUESTION.FAIL);
+
+export const loginRequest = createAction<{ presentationId: number }>(LOGIN.REQUEST);
+export const loginSuccess = createAction<{ user: User }>(LOGIN.SUCCESS);
+export const loginFail = createAction(LOGIN.FAIL);

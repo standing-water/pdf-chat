@@ -1,7 +1,8 @@
-import { GET_PRESENTATIONS, CREATE_PRESENTATION, CREATE_QUESTION, ENTER_ROOM } from "constants/presentConstants";
+import { GET_PRESENTATIONS, CREATE_PRESENTATION, CREATE_QUESTION, ENTER_ROOM, LOGIN } from "constants/presentConstants";
 
 // Initial State
 const initialState: PresentationState = {
+  user: null,
   isFetchingRooms: false,
   isFetchingCurrentRoom: false,
   rooms: [],
@@ -48,6 +49,13 @@ function presentReducer(state: PresentationState = initialState, action: any): P
       return {
         ...state,
         questions: [...state.questions, { content: action.payload }]
+      };
+    }
+    case LOGIN.SUCCESS: {
+      const { user } = action.payload;
+      return {
+        ...state,
+        user
       };
     }
 
