@@ -26,7 +26,7 @@ import {
   ModalFooter
 } from "./mainPageStyle";
 import { getQRCode } from "apis/qrcode";
-import { enterRoomRequest } from "../actions/presentAction";
+import { enterRoomRequest, loginRequest } from "actions/presentAction";
 
 interface Props {}
 
@@ -60,7 +60,11 @@ export const MainPage: React.FC<Props> = ({}) => {
       }
     }
     fetchPDF();
-  }, [currentRoom]);
+
+    if (currentRoom) {
+      dispatch(loginRequest({ presentationId: currentRoom.id }));
+    }
+  }, [currentRoom, dispatch]);
 
   useEffect(() => {
     if (match && match.params) {

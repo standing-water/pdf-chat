@@ -22,12 +22,18 @@ interface Question {
   content: string;
 }
 
+interface User {
+  nickname: string;
+  token: string;
+}
+
 type PresentationState = {
   isFetchingRooms: boolean;
   isFetchingCurrentRoom: boolean;
   rooms: Room[];
   currentRoom: RoomDetail | null;
   questions: Question[];
+  user: User | null;
 };
 
 interface AppState {

@@ -1,4 +1,5 @@
-import React, { useState, createContext } from "react";
+import React, { useState, createContext, useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { Route, Switch, withRouter, RouteComponentProps } from "react-router-dom";
 import { isMobile } from "react-device-detect";
 import { LNB } from "components";

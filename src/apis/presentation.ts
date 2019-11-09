@@ -27,7 +27,17 @@ export const createQuestion = (present_id: number, page: number, content: string
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,OPTIONS",
       Accept: "application/json",
-      "Content-Type": "multipart/form-data"
+      "Content-Type": "application/x-www-form-urlencoded"
     }
   });
 };
+
+export const login = (presentationId: number) =>
+  axios.post(`${API_URL}/presentation/${presentationId}/login`, null, {
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,OPTIONS",
+      Accept: "application/json",
+      "Content-Type": "application/x-www-form-urlencoded"
+    }
+  });

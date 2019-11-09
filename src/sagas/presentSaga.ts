@@ -1,15 +1,16 @@
 import { take, call, put, select, takeLatest, all } from "redux-saga/effects";
 import { API_URL } from "constants/server";
 import { postRequest } from "utils/request";
-import { GET_PRESENTATIONS, CREATE_PRESENTATION, CREATE_QUESTION, ENTER_ROOM } from "constants/presentConstants";
-import { getPresentation, createPresentation, enterRoom } from "apis/presentation";
+import { GET_PRESENTATIONS, CREATE_PRESENTATION, CREATE_QUESTION, ENTER_ROOM, LOGIN } from "constants/presentConstants";
+import { getPresentation, createPresentation, enterRoom, login } from "apis/presentation";
 import {
   getPresentationsRequest,
   getPresentationsSuccess,
   createPresentationFail,
   enterRoomSuccess,
   createQuestionSuccess,
-  createQuestionFail
+  createQuestionFail,
+  loginSuccess
 } from "actions/presentAction";
 
 function* watchGetPresentation(action: any) {
@@ -53,11 +54,20 @@ function* watchCreateQuestion(
   }
 }
 
+function* watchLogin(action: ActionWithPayload<{ presentationId: number }>) {
+  const { presentationId } = action.payload;
+  try {
+    const res = yield call(login, presentationId);
+    yield put(loginSuccess({ user: res.data.data }));
+  } catch (err) {}
+}
+
 export default function* presentSaga() {
   yield all([
     takeLatest(GET_PRESENTATIONS.REQUEST, watchGetPresentation),
     takeLatest(CREATE_PRESENTATION.REQUEST, watchCreatePresentation),
     takeLatest(ENTER_ROOM.REQUEST, watchEnterRoom),
-    takeLatest(CREATE_QUESTION.REQUEST, watchCreateQuestion)
+    takeLatest(CREATE_QUESTION.REQUEST, watchCreateQuestion),
+    takeLatest(LOGIN.REQUEST, watchLogin)
   ]);
 }
