@@ -41,7 +41,6 @@ export const ChatContentWrapper = styled.div`
   position: relative;
   height: calc(100% - 60px - 40px);
   overflow-x: hidden;
-  border: 1px red solid;
 
   overflow-y: scroll;
   white-space: nowrap;
@@ -74,8 +73,7 @@ export const TabItem = styled.div<{ tabId: number; tabState: number }>`
   border-right: 1px solid #eee;
   font-size: 20px;
   cursor: pointer;
-  color: ${props =>
-    props.tabState === props.tabId ? DARK_MAIN_COLOR : "black"};
+  color: ${(props) => (props.tabState === props.tabId ? DARK_MAIN_COLOR : "black")};
   &:last-child {
     border-right: none;
   }
@@ -86,9 +84,9 @@ export const ChatBubbleWrapper = styled.div<{ mine: boolean }>`
   margin-bottom: 5px;
   display: flex;
   flex-shrink: 0;
-  align-self: ${props => (props.mine ? "flex-end" : "flex-start")};
-  margin-right: ${props => (props.mine ? "4%" : null)};
-  margin-left: ${props => (props.mine ? null : "4%")};
+  align-self: ${(props) => (props.mine ? "flex-end" : "flex-start")};
+  margin-right: ${(props) => (props.mine ? "4%" : null)};
+  margin-left: ${(props) => (props.mine ? null : "4%")};
   max-width: 70%;
   flex-direction: column;
 `;
@@ -97,8 +95,8 @@ export const ChatBubble = styled.div<{ mine: boolean }>`
   width: 100%;
   border-radius: 20px;
   padding: 8px 15px;
-  color: ${props => (props.mine ? "white" : "black")};
-  background: ${props => (props.mine ? DARK_MAIN_COLOR : "#eee")};
+  color: ${(props) => (props.mine ? "white" : "black")};
+  background: ${(props) => (props.mine ? DARK_MAIN_COLOR : "#eee")};
   background-attachment: fixed;
   position: relative;
   word-break: break-all;
@@ -110,11 +108,11 @@ export const ChatBubble = styled.div<{ mine: boolean }>`
     position: absolute;
     z-index: 0;
     bottom: 0;
-    right: ${props => (props.mine ? "-8px" : null)};
-    left: ${props => (props.mine ? null : "-7px")};
+    right: ${(props) => (props.mine ? "-8px" : null)};
+    left: ${(props) => (props.mine ? null : "-7px")};
     height: 20px;
     width: 20px;
-    background: ${props => (props.mine ? DARK_MAIN_COLOR : "#eee")};
+    background: ${(props) => (props.mine ? DARK_MAIN_COLOR : "#eee")};
     background-attachment: fixed;
     border-bottom-left-radius: 15px;
   }
@@ -124,8 +122,8 @@ export const ChatBubble = styled.div<{ mine: boolean }>`
     position: absolute;
     z-index: 1;
     bottom: 0;
-    right: ${props => (props.mine ? "-10px" : null)};
-    left: ${props => (props.mine ? null : "-10px")};
+    right: ${(props) => (props.mine ? "-10px" : null)};
+    left: ${(props) => (props.mine ? null : "-10px")};
     width: 10px;
     height: 20px;
     background: white;
@@ -134,9 +132,9 @@ export const ChatBubble = styled.div<{ mine: boolean }>`
 `;
 
 export const ChatWriter = styled.span<{ mine: boolean }>`
-  align-self: ${props => (props.mine ? "flex-end" : "flex-start")};
+  align-self: ${(props) => (props.mine ? "flex-end" : "flex-start")};
   margin-top: 2px;
-  margin-right: ${props => (props.mine ? "1%" : null)};
-  margin-left: ${props => (props.mine ? null : "1%")};
+  margin-right: ${(props) => (props.mine ? "1%" : null)};
+  margin-left: ${(props) => (props.mine ? null : "1%")};
   font-size: 14px;
 `;

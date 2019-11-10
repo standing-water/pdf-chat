@@ -30,7 +30,8 @@ import {
   ChatBubbleWrapper,
   ChatWriter
 } from "./mobileMainPageStyle";
-import { createQuestionRequest, enterRoomRequest } from "actions/presentAction";
+import { createQuestionRequest, enterRoomRequest, getQuestionsRequest, loginRequest } from "actions/presentAction";
+import { sendWS } from "apis/presentation";
 
 interface Props {}
 
@@ -67,9 +68,29 @@ export const MobileMainPage: React.FC<Props> = ({}) => {
     height: 0
   });
   const dispatch = useDispatch();
-  const presentationStore = useSelector((state: AppState) => state.presentation);
-  const { questions } = presentationStore;
-  const { isFetchingCurrentRoom, currentRoom } = useSelector((state: AppState) => state.presentation);
+  const [activeUser, setActiveUser] = useState(0);
+  const { isFetchingCurrentRoom, currentRoom, ws, user, questions } = useSelector(
+    (state: AppState) => state.presentation
+  );
+
+  ws.onmessage = (event: MessageEvent) => {
+    const data = JSON.parse(event.data);
+    switch (data.event) {
+      case "crud": {
+        switch (data.data.resource) {
+          case "question": {
+            if (user && currentRoom) {
+              return dispatch(getQuestionsRequest({ token: user.token, presentationId: currentRoom.id }));
+            }
+          }
+        }
+        break;
+      }
+      case "active_user": {
+        return setActiveUser(data.data.count);
+      }
+    }
+  };
 
   useEffect(() => {
     async function fetchPDF() {
@@ -91,13 +112,39 @@ export const MobileMainPage: React.FC<Props> = ({}) => {
     Events.scrollEvent.register("begin", function(to, element) {});
     Events.scrollEvent.register("end", function(to, element) {});
     scrollSpy.update();
-  }, [currentRoom]);
+
+    if (currentRoom) {
+      dispatch(loginRequest({ presentationId: currentRoom.id }));
+      setActiveUser(currentRoom.activeUserCount + 1);
+    }
+  }, [currentRoom, dispatch]);
+
+  useEffect(() => {
+    if (user && currentRoom) {
+      dispatch(getQuestionsRequest({ token: user.token, presentationId: currentRoom.id }));
+      sendWS(ws, {
+        message: "subscribe",
+        parameter: {
+          presentation_id: currentRoom.id,
+          token: user.token
+        }
+      });
+    }
+  }, [user, currentRoom, ws, dispatch]);
+
+  useEffect(() => {
+    return () => {
+      sendWS(ws, {
+        message: "unsubscribe"
+      });
+    };
+  }, [ws]);
 
   useEffect(() => {
     if (match && match.params) {
       dispatch(enterRoomRequest({ enterId: match.params.enterId }));
     }
-  }, [match, enterRoomRequest]);
+  }, []);
 
   const onDocumentLoadSuccess = ({ numPages }: { numPages: any }) => {
     // console.log("success");
@@ -139,24 +186,32 @@ export const MobileMainPage: React.FC<Props> = ({}) => {
   }, []);
 
   const onClickSendQuestion = () => {
-    if (presentationStore.user) {
+    if (user && inputRef.current && currentRoom) {
       dispatch(
-        createQuestionRequest({ token: presentationStore.user.token, presentationId: 1, page: 4, content: "df" })
+        createQuestionRequest({
+          token: user.token,
+          presentationId: currentRoom.id,
+          page: pageNumber,
+          content: inputRef.current.value
+        })
       );
       scrollToBottom();
       inputRef.current!.focus();
+      inputRef.current.value = "";
     }
   };
 
   const renderChat = () => {
     return (
       <>
-        {questions.map((x) => (
-          <ChatBubbleWrapper mine={true}>
-            <ChatBubble mine={true}>{x.content}</ChatBubble>
-            <ChatWriter mine={true}>신현종</ChatWriter>
-          </ChatBubbleWrapper>
-        ))}
+        {[...questions]
+          .sort((a, b) => a.id - b.id)
+          .map((item) => (
+            <ChatBubbleWrapper mine={true} key={item.id}>
+              <ChatBubble mine={true}>{item.content}</ChatBubble>
+              <ChatWriter mine={true}>{item.nickname}</ChatWriter>
+            </ChatBubbleWrapper>
+          ))}
       </>
     );
   };
@@ -192,7 +247,7 @@ export const MobileMainPage: React.FC<Props> = ({}) => {
       </ChatWrapper>
       <Element name='input'>
         <InputWrapper>
-          <Input ref={inputRef} shape='ROUND' buttonIcon='xi-arrow-up' onClickButton={onClickSendQuestion}></Input>
+          <Input ref={inputRef} shape='ROUND' buttonIcon='xi-arrow-up' onClickButton={onClickSendQuestion} />
         </InputWrapper>
       </Element>
     </MainPageWrapper>
