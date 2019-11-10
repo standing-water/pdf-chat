@@ -30,12 +30,7 @@ import {
 } from "./mainPageStyle";
 import { getQRCode } from "apis/qrcode";
 import { sendWS } from "apis/presentation";
-import {
-  enterRoomRequest,
-  loginRequest,
-  likeRequest,
-  dislikeRequest
-} from "actions/presentAction";
+import { enterRoomRequest, loginRequest, likeRequest, dislikeRequest } from "actions/presentAction";
 import { WS_URL } from "constants/server";
 import { createQuestion } from "../apis/presentation";
 import { createQuestionRequest, getQuestionsRequest, changePageRequest } from "../actions/presentAction";
@@ -81,13 +76,9 @@ export const MainPage: React.FC<Props> = ({}) => {
 
   const [activeUser, setActiveUser] = useState(0);
 
-  const {
-    isFetchingCurrentRoom,
-    currentRoom,
-    ws,
-    user,
-    questions
-  } = useSelector((state: AppState) => state.presentation);
+  const { isFetchingCurrentRoom, currentRoom, ws, user, questions } = useSelector(
+    (state: AppState) => state.presentation
+  );
 
   ws.onmessage = (event: MessageEvent) => {
     const data = JSON.parse(event.data);
@@ -175,7 +166,7 @@ export const MainPage: React.FC<Props> = ({}) => {
 
   useEffect(() => {
     if (chatRef.current) {
-      chatRef.current.scrollTop = chatRef.current.scrollHeight;
+      // chatRef.current.scrollTop = chatRef.current.scrollHeight;
     }
   }, [questions.length, chatRef]);
 
@@ -271,20 +262,12 @@ export const MainPage: React.FC<Props> = ({}) => {
           <ReactResizeDetector handleWidth handleHeight onResize={handleResize}>
             <PdfContentWrapper>
               <PaginatorContainer>
-                <Paginator direction="LEFT" onClick={goToPrevPage}></Paginator>
-                <Paginator direction="RIGHT" onClick={goToNextPage}></Paginator>
+                <Paginator direction='LEFT' onClick={goToPrevPage}></Paginator>
+                <Paginator direction='RIGHT' onClick={goToNextPage}></Paginator>
               </PaginatorContainer>
-              <Document
-                file={Pdf}
-                onLoadError={err => console.log(err)}
-                onLoadSuccess={onDocumentLoadSuccess}
-              >
+              <Document file={Pdf} onLoadError={(err) => console.log(err)} onLoadSuccess={onDocumentLoadSuccess}>
                 <PdfContent>
-                  <Page
-                    pageNumber={pageNumber}
-                    width={resizePosition.width - 10}
-                    height={resizePosition.height - 10}
-                  />
+                  <Page pageNumber={pageNumber} width={resizePosition.width - 10} height={resizePosition.height - 10} />
                 </PdfContent>
               </Document>
             </PdfContentWrapper>
@@ -295,8 +278,8 @@ export const MainPage: React.FC<Props> = ({}) => {
             </div>
             <div>
               <Button
-                buttonType="SECONDARY"
-                icon="xi-share-alt-o xi-x"
+                buttonType='SECONDARY'
+                icon='xi-share-alt-o xi-x'
                 onClick={handleClickShare}
                 styles={css`
                   font-size: 18px;
@@ -306,8 +289,8 @@ export const MainPage: React.FC<Props> = ({}) => {
                 Share
               </Button>
               <Button
-                buttonType="SECONDARY"
-                icon="xi-expand-square xi-x"
+                buttonType='SECONDARY'
+                icon='xi-expand-square xi-x'
                 onClick={handleClickFullscreen}
                 styles={css`
                   font-size: 18px;
@@ -328,34 +311,25 @@ export const MainPage: React.FC<Props> = ({}) => {
             <h3>Users: {activeUser}</h3>
           </div>
           <ChatContentWrapper ref={chatRef}>
-            {orderBy([...questions], ["likeCount", "id"], ["desc", "desc"]).map(
-              item => (
-                <QuestionBox key={item.id}>
-                  <UserText>{item.nickname}</UserText>
-                  {item.content}
-                  <QuestionFooter>
-                    <span onClick={handleClickLike(item)}>
-                      <i
-                        className={
-                          item.liked ? "xi-heart xi-x" : "xi-heart-o xi-x"
-                        }
-                        style={{ color: item.liked ? "red" : "black" }}
-                      />{" "}
-                      {item.likeCount}
-                    </span>
-                  </QuestionFooter>
-                </QuestionBox>
-              )
-            )}
+            {orderBy([...questions], ["likeCount", "id"], ["desc", "desc"]).map((item) => (
+              <QuestionBox key={item.id}>
+                <UserText>{item.nickname}</UserText>
+                {item.content}
+                <QuestionFooter>
+                  <span onClick={handleClickLike(item)}>
+                    <i
+                      className={item.liked ? "xi-heart xi-x" : "xi-heart-o xi-x"}
+                      style={{ color: item.liked ? "red" : "black" }}
+                    />{" "}
+                    {item.likeCount}
+                  </span>
+                </QuestionFooter>
+              </QuestionBox>
+            ))}
           </ChatContentWrapper>
           <InputWrapper>
             <UserText>{user.nickname}</UserText>
-            <Input
-              ref={inputRef}
-              shape="ROUND"
-              buttonIcon="xi-arrow-up"
-              onClickButton={handleClickInput}
-            />
+            <Input ref={inputRef} shape='ROUND' buttonIcon='xi-arrow-up' onClickButton={handleClickInput} />
           </InputWrapper>
         </ChatWrapper>
         <Modal
@@ -370,10 +344,10 @@ export const MainPage: React.FC<Props> = ({}) => {
         >
           <h1>Share Presentation</h1>
           <ModalBody>
-            <img src={getQRCode(currentRoom.enterId)} alt="qrcode" />
+            <img src={getQRCode(currentRoom.enterId)} alt='qrcode' />
           </ModalBody>
           <ModalFooter>
-            <Button buttonType="SECONDARY" onClick={handleCloseModal}>
+            <Button buttonType='SECONDARY' onClick={handleCloseModal}>
               Close
             </Button>
           </ModalFooter>
