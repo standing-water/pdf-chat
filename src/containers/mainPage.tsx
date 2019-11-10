@@ -42,6 +42,10 @@ const QuestionBox = styled.div`
   border-radius: 4px;
   border: 1px solid ${DARK_GREY};
   padding: 0.5rem;
+
+  & + & {
+    margin-top: 1rem;
+  }
 `;
 
 const UserText = styled.div`

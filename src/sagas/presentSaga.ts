@@ -50,7 +50,6 @@ function* watchEnterRoom(action: ActionWithPayload<{ enterId: string }>) {
 
 function* watchGetQuestion(action: ActionWithPayload<{ token: string; presentationId: number }>) {
   const { token, presentationId } = action.payload;
-  console.log("TEST@@#$");
   try {
     const res = yield call(getQuestions, token, presentationId);
     yield put(getQuestionsSuccess({ questions: res.data.data.items }));
