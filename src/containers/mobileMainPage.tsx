@@ -1,6 +1,18 @@
-import React, { useCallback, useState, useEffect, useRef, createRef } from "react";
+import React, {
+  useCallback,
+  useState,
+  useEffect,
+  useRef,
+  createRef
+} from "react";
 import { useRouteMatch } from "react-router-dom";
-import { animateScroll, Events, scrollSpy, scroller, Element } from "react-scroll";
+import {
+  animateScroll,
+  Events,
+  scrollSpy,
+  scroller,
+  Element
+} from "react-scroll";
 import { Input, Button } from "components";
 import { render } from "react-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -16,7 +28,14 @@ import Modal from "react-modal";
 import { getQRCode } from "apis/qrcode";
 
 import { Document, Page } from "react-pdf/dist/entry.webpack";
-import { PdfFooter, PaginatorContainer, Paginator, ModalBody, ModalFooter, PdfContent } from "./mainPageStyle";
+import {
+  PdfFooter,
+  PaginatorContainer,
+  Paginator,
+  ModalBody,
+  ModalFooter,
+  PdfContent
+} from "./mainPageStyle";
 import {
   MainPageWrapper,
   PdfWrapper,
@@ -60,7 +79,6 @@ export const MobileMainPage: React.FC<Props> = ({}) => {
   // };
 
   const match = useRouteMatch<{ enterId: string }>();
-
   const containerRef = createRef<HTMLDivElement>();
   const chatContainerRef = createRef<HTMLDivElement>();
   const inputRef = createRef<HTMLInputElement>();
@@ -77,9 +95,13 @@ export const MobileMainPage: React.FC<Props> = ({}) => {
   });
   const dispatch = useDispatch();
   const [activeUser, setActiveUser] = useState(0);
-  const { isFetchingCurrentRoom, currentRoom, ws, user, questions } = useSelector(
-    (state: AppState) => state.presentation
-  );
+  const {
+    isFetchingCurrentRoom,
+    currentRoom,
+    ws,
+    user,
+    questions
+  } = useSelector((state: AppState) => state.presentation);
 
   ws.onmessage = (event: MessageEvent) => {
     const data = JSON.parse(event.data);
@@ -89,7 +111,12 @@ export const MobileMainPage: React.FC<Props> = ({}) => {
           case "question_like":
           case "question": {
             if (user && currentRoom) {
-              return dispatch(getQuestionsRequest({ token: user.token, presentationId: currentRoom.id }));
+              return dispatch(
+                getQuestionsRequest({
+                  token: user.token,
+                  presentationId: currentRoom.id
+                })
+              );
             }
           }
         }
@@ -130,7 +157,12 @@ export const MobileMainPage: React.FC<Props> = ({}) => {
 
   useEffect(() => {
     if (user && currentRoom) {
-      dispatch(getQuestionsRequest({ token: user.token, presentationId: currentRoom.id }));
+      dispatch(
+        getQuestionsRequest({
+          token: user.token,
+          presentationId: currentRoom.id
+        })
+      );
       sendWS(ws, {
         message: "subscribe",
         parameter: {
@@ -178,15 +210,15 @@ export const MobileMainPage: React.FC<Props> = ({}) => {
     }
   };
 
-  const scrollToBottom = () => {
+  const scrollToBottom = (id: number) => {
     // animateScroll.scrollToBottom({});
     // // Somewhere else, even another file
-    animateScroll.scrollTo(2000, {
-      duration: 800,
+    scroller.scrollTo(`chat-${id}`, {
+      duration: 300,
       delay: 0,
       smooth: true,
       containerId: "chatContainer",
-      offset: 200 // Scrolls to element + 50 pixels down the page
+      offset: -100
     });
   };
 
@@ -210,15 +242,32 @@ export const MobileMainPage: React.FC<Props> = ({}) => {
   };
 
   useEffect(() => {
-    scrollToBottom();
+    if (questions.length > 0) {
+      const max = questions.reduce(function(prev, current) {
+        return prev.id > current.id ? prev : current;
+      });
+      scrollToBottom(max.id);
+    }
   }, [questions.length]);
 
   const handleClickLike = (question: Question) => () => {
     if (user && currentRoom) {
       if (question.liked) {
-        dispatch(dislikeRequest({ token: user.token, presentationId: currentRoom.id, questionId: question.id }));
+        dispatch(
+          dislikeRequest({
+            token: user.token,
+            presentationId: currentRoom.id,
+            questionId: question.id
+          })
+        );
       } else {
-        dispatch(likeRequest({ token: user.token, presentationId: currentRoom.id, questionId: question.id }));
+        dispatch(
+          likeRequest({
+            token: user.token,
+            presentationId: currentRoom.id,
+            questionId: question.id
+          })
+        );
       }
     }
   };
@@ -226,21 +275,27 @@ export const MobileMainPage: React.FC<Props> = ({}) => {
   const renderChat = () => {
     return (
       <>
-        {orderBy([...questions], ["likeCount", "id"], ["desc", "desc"]).map((item) => (
-          <ChatBubbleWrapper mine={true} key={item.id}>
-            <ChatBubble mine={true}>{item.content}</ChatBubble>
-            <ChatWriter mine={true}>
-              {item.nickname}
-              <span onClick={handleClickLike(item)}>
-                <i
-                  className={item.liked ? "xi-heart xi-x" : "xi-heart-o xi-x"}
-                  style={{ color: item.liked ? "red" : "black" }}
-                />{" "}
-                {item.likeCount}
-              </span>
-            </ChatWriter>
-          </ChatBubbleWrapper>
-        ))}
+        {orderBy([...questions], ["likeCount", "id"], ["desc", "desc"]).map(
+          item => (
+            <ChatBubbleWrapper
+              mine={item.myQuestion}
+              name={`chat-${item.id}`}
+              key={item.id}
+            >
+              <ChatBubble mine={item.myQuestion}>{item.content}</ChatBubble>
+              <ChatWriter mine={item.myQuestion}>
+                {item.nickname}
+                <span onClick={handleClickLike(item)}>
+                  <i
+                    className={item.liked ? "xi-heart xi-x" : "xi-heart-o xi-x"}
+                    style={{ color: item.liked ? "red" : "black" }}
+                  />{" "}
+                  {item.likeCount}
+                </span>
+              </ChatWriter>
+            </ChatBubbleWrapper>
+          )
+        )}
       </>
     );
   };
@@ -251,12 +306,20 @@ export const MobileMainPage: React.FC<Props> = ({}) => {
         <ReactResizeDetector handleWidth handleHeight onResize={handleResize}>
           <PdfContentWrapper>
             <PaginatorContainer>
-              <Paginator direction='LEFT' onClick={goToPrevPage}></Paginator>
-              <Paginator direction='RIGHT' onClick={goToNextPage}></Paginator>
+              <Paginator direction="LEFT" onClick={goToPrevPage}></Paginator>
+              <Paginator direction="RIGHT" onClick={goToNextPage}></Paginator>
             </PaginatorContainer>
-            <Document file={Pdf} onLoadError={(err) => console.log(err)} onLoadSuccess={onDocumentLoadSuccess}>
+            <Document
+              file={Pdf}
+              onLoadError={err => console.log(err)}
+              onLoadSuccess={onDocumentLoadSuccess}
+            >
               <PdfContent>
-                <Page pageNumber={pageNumber} width={resizePosition.width - 10} height={resizePosition.height - 10} />
+                <Page
+                  pageNumber={pageNumber}
+                  width={resizePosition.width - 10}
+                  height={resizePosition.height - 10}
+                />
               </PdfContent>
             </Document>
           </PdfContentWrapper>
@@ -264,20 +327,29 @@ export const MobileMainPage: React.FC<Props> = ({}) => {
       </PdfWrapper>
       <ChatWrapper>
         <TabWrapper>
-          {tabData.map((x) => (
-            <TabItem onClick={() => setTabState(x.id)} tabId={x.id} tabState={tabState}>
+          {tabData.map(x => (
+            <TabItem
+              onClick={() => setTabState(x.id)}
+              tabId={x.id}
+              tabState={tabState}
+            >
               <i className={x.icon}></i>
             </TabItem>
           ))}
         </TabWrapper>
-        <div>Active Users: {activeUser}</div>
-        <ChatContentWrapper id='chatContainer' ref={chatContainerRef}>
+        <div>Users: {activeUser}</div>
+        <ChatContentWrapper id="chatContainer" ref={chatContainerRef}>
           {tabState === 0 ? renderChat() : <div>질문</div>}
         </ChatContentWrapper>
       </ChatWrapper>
-      <Element name='input'>
+      <Element name="input">
         <InputWrapper>
-          <Input ref={inputRef} shape='ROUND' buttonIcon='xi-arrow-up' onClickButton={onClickSendQuestion} />
+          <Input
+            ref={inputRef}
+            shape="ROUND"
+            buttonIcon="xi-arrow-up"
+            onClickButton={onClickSendQuestion}
+          />
         </InputWrapper>
       </Element>
     </MainPageWrapper>
