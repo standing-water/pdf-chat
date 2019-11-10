@@ -75,3 +75,17 @@ export const dislike = (token: string, presentationId: number, questionId: numbe
     }
   });
 };
+
+export const changePage = (token: string, presentationId: number, page: number) => {
+  const formData = new FormData();
+  formData.append("page", page.toString());
+  return axios.patch(`${API_URL}/presentation/${presentationId}`, formData, {
+    headers: {
+      Authorization: `bearer ${token}`,
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,OPTIONS",
+      Accept: "application/json",
+      "Content-Type": "application/x-www-form-urlencoded"
+    }
+  });
+};

@@ -29,6 +29,16 @@ function presentReducer(state: PresentationState = initialState, action: any): P
         isFetchingRooms: false
       };
     }
+    case CREATE_PRESENTATION.SUCCESS: {
+      const { token } = action.payload;
+      return {
+        ...state,
+        user: {
+          nickname: "발표자",
+          token
+        }
+      };
+    }
     case ENTER_ROOM.REQUEST: {
       return {
         ...state,

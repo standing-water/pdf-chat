@@ -7,7 +7,8 @@ import {
   LOGIN,
   GET_QUESTIONS,
   LIKE,
-  DISLIKE
+  DISLIKE,
+  CHANGE_PAGE
 } from "constants/presentConstants";
 
 export const getPresentationsRequest = createAction(GET_PRESENTATIONS.REQUEST);
@@ -18,7 +19,9 @@ export const createPresentationRequest = createAction<{
   name: string;
   file: File;
 }>(CREATE_PRESENTATION.REQUEST);
-export const createPresentationSuccess = createAction(CREATE_PRESENTATION.SUCCESS);
+export const createPresentationSuccess = createAction<{ enterId: string; id: number; fileUrl: string; token: string }>(
+  CREATE_PRESENTATION.SUCCESS
+);
 export const createPresentationFail = createAction(CREATE_PRESENTATION.FAIL);
 
 export const enterRoomRequest = createAction<{ enterId: string }>(ENTER_ROOM.REQUEST);
@@ -51,3 +54,8 @@ export const dislikeRequest = createAction<{ token: string; presentationId: numb
 );
 export const dislikeSuccess = createAction(DISLIKE.SUCCESS);
 export const dislikeFail = createAction(DISLIKE.FAIL);
+
+export const changePageRequest = createAction<{ token: string; presentationId: number; page: number }>(
+  CHANGE_PAGE.REQUEST
+);
+export const changePageSuccess = createAction(CHANGE_PAGE.SUCCESS);

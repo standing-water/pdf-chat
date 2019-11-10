@@ -9,7 +9,8 @@ import {
   LOGIN,
   GET_QUESTIONS,
   LIKE,
-  DISLIKE
+  DISLIKE,
+  CHANGE_PAGE
 } from "constants/presentConstants";
 import {
   getPresentation,
@@ -19,7 +20,8 @@ import {
   createQuestion,
   getQuestions,
   like,
-  dislike
+  dislike,
+  changePage
 } from "apis/presentation";
 
 import {
@@ -31,7 +33,8 @@ import {
   createQuestionFail,
   loginSuccess,
   getQuestionsRequest,
-  getQuestionsSuccess
+  getQuestionsSuccess,
+  createPresentationSuccess
 } from "actions/presentAction";
 
 function* watchGetPresentation(action: any) {
@@ -44,7 +47,9 @@ function* watchGetPresentation(action: any) {
 function* watchCreatePresentation(action: ActionWithPayload<{ name: string; file: File }>) {
   const { name, file } = action.payload;
   try {
-    const test = yield call(createPresentation, name, file);
+    const res = yield call(createPresentation, name, file);
+    const data = res.data.data;
+    yield put(createPresentationSuccess({ ...data }));
     yield put(getPresentationsRequest());
   } catch (err) {
     yield put(createPresentationFail());
@@ -112,6 +117,13 @@ function* watchDislike(action: ActionWithPayload<{ token: string; presentationId
   } catch (err) {}
 }
 
+function* watchPageChange(action: ActionWithPayload<{ token: string; presentationId: number; page: number }>) {
+  const { token, presentationId, page } = action.payload;
+  try {
+    yield call(changePage, token, presentationId, page);
+  } catch (err) {}
+}
+
 export default function* presentSaga() {
   yield all([
     takeLatest(GET_PRESENTATIONS.REQUEST, watchGetPresentation),
@@ -121,6 +133,7 @@ export default function* presentSaga() {
     takeLatest(CREATE_QUESTION.REQUEST, watchCreateQuestion),
     takeLatest(LOGIN.REQUEST, watchLogin),
     takeLatest(LIKE.REQUEST, watchLike),
-    takeLatest(DISLIKE.REQUEST, watchDislike)
+    takeLatest(DISLIKE.REQUEST, watchDislike),
+    takeLatest(CHANGE_PAGE.REQUEST, watchPageChange)
   ]);
 }

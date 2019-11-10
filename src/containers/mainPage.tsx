@@ -33,7 +33,7 @@ import { sendWS } from "apis/presentation";
 import { enterRoomRequest, loginRequest, likeRequest, dislikeRequest } from "actions/presentAction";
 import { WS_URL } from "constants/server";
 import { createQuestion } from "../apis/presentation";
-import { createQuestionRequest, getQuestionsRequest } from "../actions/presentAction";
+import { createQuestionRequest, getQuestionsRequest, changePageRequest } from "../actions/presentAction";
 import { DARK_GREY } from "constants/colors";
 
 interface Props {}
@@ -97,6 +97,9 @@ export const MainPage: React.FC<Props> = ({}) => {
       case "active_user": {
         return setActiveUser(data.data.count);
       }
+      case "change_page": {
+        return setPageNumber(data.data.page);
+      }
     }
   };
 
@@ -117,10 +120,12 @@ export const MainPage: React.FC<Props> = ({}) => {
     fetchPDF();
 
     if (currentRoom) {
-      dispatch(loginRequest({ presentationId: currentRoom.id }));
+      if (!user) {
+        dispatch(loginRequest({ presentationId: currentRoom.id }));
+      }
       setActiveUser(currentRoom.activeUserCount + 1);
     }
-  }, [currentRoom, dispatch]);
+  }, [currentRoom, dispatch, user]);
 
   useEffect(() => {
     if (user && currentRoom) {
@@ -172,11 +177,17 @@ export const MainPage: React.FC<Props> = ({}) => {
 
   const goToPrevPage = useCallback(() => {
     setPageNumber(pageNumber - 1);
-  }, [pageNumber]);
+    if (currentRoom && user && user.nickname === "발표자") {
+      dispatch(changePageRequest({ token: user.token, presentationId: currentRoom.id, page: pageNumber - 1 }));
+    }
+  }, [pageNumber, currentRoom, user, dispatch]);
 
   const goToNextPage = useCallback(() => {
     setPageNumber(pageNumber + 1);
-  }, [pageNumber]);
+    if (currentRoom && user && user.nickname === "발표자") {
+      dispatch(changePageRequest({ token: user.token, presentationId: currentRoom.id, page: pageNumber + 1 }));
+    }
+  }, [pageNumber, currentRoom, user, dispatch]);
 
   const handleResize = useCallback((width: number, height: number) => {
     setResizePosition({ width, height });
