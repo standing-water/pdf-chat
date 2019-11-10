@@ -1,8 +1,17 @@
 import { take, call, put, select, takeLatest, all } from "redux-saga/effects";
 import { API_URL } from "constants/server";
 import { postRequest } from "utils/request";
-import { GET_PRESENTATIONS, CREATE_PRESENTATION, CREATE_QUESTION, ENTER_ROOM, LOGIN } from "constants/presentConstants";
-import { getPresentation, createPresentation, enterRoom, login } from "apis/presentation";
+import {
+  GET_PRESENTATIONS,
+  CREATE_PRESENTATION,
+  CREATE_QUESTION,
+  ENTER_ROOM,
+  LOGIN,
+  GET_QUESTIONS
+} from "constants/presentConstants";
+import { getPresentation, createPresentation, enterRoom, login, createQuestion, getQuestions } from "apis/presentation";
+import { getQuestionsSuccess } from "../actions/presentAction";
+
 import {
   getPresentationsRequest,
   getPresentationsSuccess,
@@ -10,7 +19,8 @@ import {
   enterRoomSuccess,
   createQuestionSuccess,
   createQuestionFail,
-  loginSuccess
+  loginSuccess,
+  getQuestionsRequest
 } from "actions/presentAction";
 
 function* watchGetPresentation(action: any) {
@@ -38,17 +48,31 @@ function* watchEnterRoom(action: ActionWithPayload<{ enterId: string }>) {
   } catch (err) {}
 }
 
+function* watchGetQuestion(action: ActionWithPayload<{ token: string; presentationId: number }>) {
+  const { token, presentationId } = action.payload;
+  console.log("TEST@@#$");
+  try {
+    const res = yield call(getQuestions, token, presentationId);
+    yield put(getQuestionsSuccess({ questions: res.data.data.items }));
+  } catch (err) {
+    console.log(err);
+  }
+}
+
 function* watchCreateQuestion(
   action: ActionWithPayload<{
-    present_id: number;
+    token: string;
+    presentationId: number;
     page: number;
     content: string;
   }>
 ) {
-  const { present_id, page, content } = action.payload;
-  // const question = yield call(createQuestion, present_id, page, content)
+  const { token, presentationId, page, content } = action.payload;
   try {
+    const res = yield call(createQuestion, token, presentationId, page, content);
+    console.log(res.data.data);
     yield put(createQuestionSuccess(content));
+    yield put(getQuestionsRequest({ token, presentationId }));
   } catch (err) {
     yield put(createQuestionFail());
   }
@@ -67,6 +91,7 @@ export default function* presentSaga() {
     takeLatest(GET_PRESENTATIONS.REQUEST, watchGetPresentation),
     takeLatest(CREATE_PRESENTATION.REQUEST, watchCreatePresentation),
     takeLatest(ENTER_ROOM.REQUEST, watchEnterRoom),
+    takeLatest(GET_QUESTIONS.REQUEST, watchGetQuestion),
     takeLatest(CREATE_QUESTION.REQUEST, watchCreateQuestion),
     takeLatest(LOGIN.REQUEST, watchLogin)
   ]);

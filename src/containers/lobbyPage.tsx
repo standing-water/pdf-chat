@@ -61,6 +61,8 @@ const MainContainer = styled.div<{ isExtends: boolean }>`
   border-radius: 10px 10px 0 0;
   background: white;
   box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
+  max-height: 100%;
+  overflow-y: auto;
 `;
 
 const RoomList = styled.ul`

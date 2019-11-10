@@ -13,14 +13,7 @@ import Modal from "react-modal";
 import { getQRCode } from "apis/qrcode";
 
 import { Document, Page } from "react-pdf/dist/entry.webpack";
-import {
-  PdfFooter,
-  PaginatorContainer,
-  Paginator,
-  ModalBody,
-  ModalFooter,
-  PdfContent
-} from "./mainPageStyle";
+import { PdfFooter, PaginatorContainer, Paginator, ModalBody, ModalFooter, PdfContent } from "./mainPageStyle";
 import {
   MainPageWrapper,
   PdfWrapper,
@@ -67,9 +60,7 @@ export const MobileMainPage: React.FC<Props> = ({}) => {
     height: 0
   });
   const dispatch = useDispatch();
-  const presentationStore = useSelector(
-    (state: AppState) => state.presentation
-  );
+  const presentationStore = useSelector((state: AppState) => state.presentation);
   const { questions } = presentationStore;
 
   useEffect(() => {
@@ -133,13 +124,17 @@ export const MobileMainPage: React.FC<Props> = ({}) => {
   }, []);
 
   const onClickSendQuestion = () => {
-    dispatch(createQuestionRequest({ present_id: 1, page: 4, content: "df" }));
+    if (presentationStore.user) {
+      dispatch(
+        createQuestionRequest({ token: presentationStore.user.token, presentationId: 1, page: 4, content: "df" })
+      );
+    }
   };
 
   const renderChat = () => {
     return (
       <>
-        {questions.map(x => (
+        {questions.map((x) => (
           <ChatBubbleWrapper mine={true}>
             <ChatBubble mine={true}>{x.content}</ChatBubble>
             <ChatWriter mine={true}>신현종</ChatWriter>
@@ -155,28 +150,20 @@ export const MobileMainPage: React.FC<Props> = ({}) => {
         <ReactResizeDetector handleWidth handleHeight onResize={handleResize}>
           <PdfContentWrapper>
             <PaginatorContainer>
-              <Paginator direction="LEFT" onClick={goToPrevPage}></Paginator>
-              <Paginator direction="RIGHT" onClick={goToNextPage}></Paginator>
+              <Paginator direction='LEFT' onClick={goToPrevPage}></Paginator>
+              <Paginator direction='RIGHT' onClick={goToNextPage}></Paginator>
             </PaginatorContainer>
-            <Document
-              file={Pdf}
-              onLoadError={err => console.log(err)}
-              onLoadSuccess={onDocumentLoadSuccess}
-            >
+            <Document file={Pdf} onLoadError={(err) => console.log(err)} onLoadSuccess={onDocumentLoadSuccess}>
               <PdfContent>
-                <Page
-                  pageNumber={pageNumber}
-                  width={resizePosition.width - 10}
-                  height={resizePosition.height - 10}
-                />
+                <Page pageNumber={pageNumber} width={resizePosition.width - 10} height={resizePosition.height - 10} />
               </PdfContent>
             </Document>
           </PdfContentWrapper>
         </ReactResizeDetector>
         <PdfFooter>
           <Button
-            buttonType="SECONDARY"
-            icon="xi-share-alt-o xi-x"
+            buttonType='SECONDARY'
+            icon='xi-share-alt-o xi-x'
             onClick={handleClickShare}
             styles={css`
               font-size: 12px;
@@ -185,8 +172,8 @@ export const MobileMainPage: React.FC<Props> = ({}) => {
             Share
           </Button>
           <Button
-            buttonType="SECONDARY"
-            icon="xi-expand-square xi-x"
+            buttonType='SECONDARY'
+            icon='xi-expand-square xi-x'
             onClick={handleClickFullscreen}
             styles={css`
               font-size: 12px;
@@ -198,26 +185,18 @@ export const MobileMainPage: React.FC<Props> = ({}) => {
       </PdfWrapper>
       <ChatWrapper>
         <TabWrapper>
-          {tabData.map(x => (
-            <TabItem
-              onClick={() => setTabState(x.id)}
-              tabId={x.id}
-              tabState={tabState}
-            >
+          {tabData.map((x) => (
+            <TabItem onClick={() => setTabState(x.id)} tabId={x.id} tabState={tabState}>
               <i className={x.icon}></i>
             </TabItem>
           ))}
         </TabWrapper>
-        <ChatContentWrapper>
-          {tabState === 0 ? renderChat() : <div>질문</div>}
-        </ChatContentWrapper>
+        <ChatContentWrapper>{tabState === 0 ? renderChat() : <div>질문</div>}</ChatContentWrapper>
       </ChatWrapper>
       <InputWrapper>
-        <Input
-          shape="ROUND"
-          buttonIcon="xi-arrow-up"
-          onClickButton={onClickSendQuestion}
-        ></Input>
+        <form>
+          <Input shape='ROUND' buttonIcon='xi-arrow-up' onClickButton={onClickSendQuestion}></Input>
+        </form>
       </InputWrapper>
     </MainPageWrapper>
   );

@@ -2,13 +2,15 @@ import React, { useCallback, useState, useEffect, createRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouteMatch } from "react-router-dom";
 import ReactResizeDetector from "react-resize-detector";
+import useForm from "react-hook-form";
+
 import axios from "axios";
-import { css } from "styled-components";
+import styled, { css } from "styled-components";
 import screenfull from "screenfull";
 
 import { Document, Page } from "react-pdf/dist/entry.webpack";
 import Modal from "react-modal";
-import { Button } from "components";
+import { Button, Input } from "components";
 import {
   MainPageWrapper,
   PdfWrapper,
@@ -29,13 +31,30 @@ import { getQRCode } from "apis/qrcode";
 import { sendWS } from "apis/presentation";
 import { enterRoomRequest, loginRequest } from "actions/presentAction";
 import { WS_URL } from "constants/server";
+import { createQuestion } from "../apis/presentation";
+import { createQuestionRequest, getQuestionsRequest } from "../actions/presentAction";
+import { DARK_GREY } from "constants/colors";
 
 interface Props {}
+
+const QuestionBox = styled.div`
+  background: white;
+  border-radius: 4px;
+  border: 1px solid ${DARK_GREY};
+  padding: 0.5rem;
+`;
+
+const UserText = styled.div`
+  font-size: 12px;
+  font-weight: 600;
+`;
 
 export const MainPage: React.FC<Props> = ({}) => {
   const dispatch = useDispatch();
   const match = useRouteMatch<{ enterId: string }>();
   const containerRef = createRef<HTMLDivElement>();
+  const inputRef = createRef<HTMLInputElement>();
+  const chatRef = createRef<HTMLDivElement>();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [pageNumber, setPageNumber] = useState(1);
   const [_numPages, setNumPages] = useState(null);
@@ -45,10 +64,32 @@ export const MainPage: React.FC<Props> = ({}) => {
     height: 0
   });
 
-  const { isFetchingCurrentRoom, currentRoom, ws, user } = useSelector((state: AppState) => state.presentation);
+  const [activeUser, setActiveUser] = useState(0);
+
+  const { isFetchingCurrentRoom, currentRoom, ws, user, questions } = useSelector(
+    (state: AppState) => state.presentation
+  );
+
+  ws.onmessage = (event: MessageEvent) => {
+    const data = JSON.parse(event.data);
+    switch (data.event) {
+      case "crud": {
+        switch (data.data.resource) {
+          case "question": {
+            if (user && currentRoom) {
+              return dispatch(getQuestionsRequest({ token: user.token, presentationId: currentRoom.id }));
+            }
+          }
+        }
+        break;
+      }
+      case "active_user": {
+        return setActiveUser(data.data.count);
+      }
+    }
+  };
 
   useEffect(() => {
-    console.log("TEST");
     async function fetchPDF() {
       if (currentRoom) {
         const res = await axios.get(currentRoom.fileUrl, {
@@ -66,11 +107,13 @@ export const MainPage: React.FC<Props> = ({}) => {
 
     if (currentRoom) {
       dispatch(loginRequest({ presentationId: currentRoom.id }));
+      setActiveUser(currentRoom.activeUserCount);
     }
   }, [currentRoom, dispatch]);
 
   useEffect(() => {
     if (user && currentRoom) {
+      dispatch(getQuestionsRequest({ token: user.token, presentationId: currentRoom.id }));
       sendWS(ws, {
         message: "subscribe",
         parameter: {
@@ -79,7 +122,7 @@ export const MainPage: React.FC<Props> = ({}) => {
         }
       });
     }
-  }, [user, currentRoom]);
+  }, [user, currentRoom, ws, dispatch]);
 
   useEffect(() => {
     return () => {
@@ -87,13 +130,19 @@ export const MainPage: React.FC<Props> = ({}) => {
         message: "unsubscribe"
       });
     };
-  });
+  }, [ws]);
 
   useEffect(() => {
     if (match && match.params) {
       dispatch(enterRoomRequest({ enterId: match.params.enterId }));
     }
   }, []);
+
+  useEffect(() => {
+    if (chatRef.current) {
+      chatRef.current.scrollTop = chatRef.current.scrollHeight;
+    }
+  }, [questions.length, chatRef]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     switch (e.keyCode) {
@@ -136,7 +185,21 @@ export const MainPage: React.FC<Props> = ({}) => {
     setIsModalOpen(false);
   }, []);
 
-  if (isFetchingCurrentRoom || !currentRoom) {
+  const handleClickInput = useCallback(() => {
+    if (inputRef.current && currentRoom && user) {
+      dispatch(
+        createQuestionRequest({
+          token: user.token,
+          presentationId: currentRoom.id,
+          page: pageNumber,
+          content: inputRef.current.value
+        })
+      );
+      inputRef.current.value = "";
+    }
+  }, [dispatch, currentRoom, user, inputRef, pageNumber]);
+
+  if (isFetchingCurrentRoom || !currentRoom || !user) {
     return null;
   }
 
@@ -192,22 +255,37 @@ export const MainPage: React.FC<Props> = ({}) => {
             <TabItem>채팅</TabItem>
             <TabItem>질문</TabItem>
           </TabWrapper>
-          <ChatContentWrapper>ㄹ</ChatContentWrapper>
-          <InputWrapper>인풋</InputWrapper>
+          <div>
+            <h3>Active Users: {activeUser}</h3>
+          </div>
+          <ChatContentWrapper ref={chatRef}>
+            {[...questions]
+              .sort((a, b) => a.id - b.id)
+              .map((item) => (
+                <QuestionBox key={item.id}>
+                  <UserText>{item.nickname}</UserText>
+                  {item.content}
+                </QuestionBox>
+              ))}
+          </ChatContentWrapper>
+          <InputWrapper>
+            <UserText>{user.nickname}</UserText>
+            <Input ref={inputRef} shape='ROUND' buttonIcon='xi-arrow-up' onClickButton={handleClickInput} />
+          </InputWrapper>
         </ChatWrapper>
         <Modal
           isOpen={isModalOpen}
           onRequestClose={handleCloseModal}
           style={{
             content: {
-              // top: "50%",
-              // height: "inherit"
+              top: "25%",
+              height: "inherit"
             }
           }}
         >
           <h1>Share Presentation</h1>
           <ModalBody>
-            <img src={getQRCode("https://naver.com")} />
+            <img src={getQRCode(currentRoom.enterId)} alt='qrcode' />
           </ModalBody>
           <ModalFooter>
             <Button buttonType='SECONDARY' onClick={handleCloseModal}>

@@ -84,10 +84,12 @@ export const ChatWrapper = styled.div`
 
 export const ChatContentWrapper = styled.div`
   flex: 10;
+  padding: 0.5rem;
+  overflow-y: scroll;
 `;
+
 export const InputWrapper = styled.div`
   flex: 1;
-  border: 2px solid brown;
 `;
 
 export const TabWrapper = styled.div`
@@ -107,6 +109,8 @@ export const TabItem = styled.div`
 
 export const ModalBody = styled.div`
   display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 export const ModalFooter = styled.div`
