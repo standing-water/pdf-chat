@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useRouteMatch } from "react-router-dom";
 import ReactResizeDetector from "react-resize-detector";
 import useForm from "react-hook-form";
+import { orderBy } from "lodash";
 
 import axios from "axios";
 import styled, { css } from "styled-components";
@@ -84,6 +85,7 @@ export const MainPage: React.FC<Props> = ({}) => {
     switch (data.event) {
       case "crud": {
         switch (data.data.resource) {
+          case "question_like":
           case "question": {
             if (user && currentRoom) {
               return dispatch(getQuestionsRequest({ token: user.token, presentationId: currentRoom.id }));
@@ -276,19 +278,21 @@ export const MainPage: React.FC<Props> = ({}) => {
             <h3>Active Users: {activeUser}</h3>
           </div>
           <ChatContentWrapper ref={chatRef}>
-            {[...questions]
-              .sort((a, b) => a.id - b.id)
-              .map((item) => (
-                <QuestionBox key={item.id}>
-                  <UserText>{item.nickname}</UserText>
-                  {item.content}
-                  <QuestionFooter>
-                    <span onClick={handleClickLike(item)}>
-                      <i className={item.liked ? "xi-heart xi-x" : "xi-heart-o xi-x"} /> {item.likeCount}
-                    </span>
-                  </QuestionFooter>
-                </QuestionBox>
-              ))}
+            {orderBy([...questions], ["likeCount", "id"], ["desc", "desc"]).map((item) => (
+              <QuestionBox key={item.id}>
+                <UserText>{item.nickname}</UserText>
+                {item.content}
+                <QuestionFooter>
+                  <span onClick={handleClickLike(item)}>
+                    <i
+                      className={item.liked ? "xi-heart xi-x" : "xi-heart-o xi-x"}
+                      style={{ color: item.liked ? "red" : "black" }}
+                    />{" "}
+                    {item.likeCount}
+                  </span>
+                </QuestionFooter>
+              </QuestionBox>
+            ))}
           </ChatContentWrapper>
           <InputWrapper>
             <UserText>{user.nickname}</UserText>

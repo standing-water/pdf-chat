@@ -9,6 +9,7 @@ import axios from "axios";
 import { css } from "styled-components";
 import Fullscreen from "react-full-screen";
 import screenfull from "screenfull";
+import { orderBy } from "lodash";
 
 import { debounce } from "lodash";
 import Modal from "react-modal";
@@ -30,7 +31,14 @@ import {
   ChatBubbleWrapper,
   ChatWriter
 } from "./mobileMainPageStyle";
-import { createQuestionRequest, enterRoomRequest, getQuestionsRequest, loginRequest } from "actions/presentAction";
+import {
+  createQuestionRequest,
+  enterRoomRequest,
+  getQuestionsRequest,
+  loginRequest,
+  likeRequest,
+  dislikeRequest
+} from "actions/presentAction";
 import { sendWS } from "apis/presentation";
 
 interface Props {}
@@ -78,6 +86,7 @@ export const MobileMainPage: React.FC<Props> = ({}) => {
     switch (data.event) {
       case "crud": {
         switch (data.data.resource) {
+          case "question_like":
           case "question": {
             if (user && currentRoom) {
               return dispatch(getQuestionsRequest({ token: user.token, presentationId: currentRoom.id }));
@@ -195,23 +204,43 @@ export const MobileMainPage: React.FC<Props> = ({}) => {
           content: inputRef.current.value
         })
       );
-      scrollToBottom();
       inputRef.current!.focus();
       inputRef.current.value = "";
+    }
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [questions.length]);
+
+  const handleClickLike = (question: Question) => () => {
+    if (user && currentRoom) {
+      if (question.liked) {
+        dispatch(dislikeRequest({ token: user.token, presentationId: currentRoom.id, questionId: question.id }));
+      } else {
+        dispatch(likeRequest({ token: user.token, presentationId: currentRoom.id, questionId: question.id }));
+      }
     }
   };
 
   const renderChat = () => {
     return (
       <>
-        {[...questions]
-          .sort((a, b) => a.id - b.id)
-          .map((item) => (
-            <ChatBubbleWrapper mine={true} key={item.id}>
-              <ChatBubble mine={true}>{item.content}</ChatBubble>
-              <ChatWriter mine={true}>{item.nickname}</ChatWriter>
-            </ChatBubbleWrapper>
-          ))}
+        {orderBy([...questions], ["likeCount", "id"], ["desc", "desc"]).map((item) => (
+          <ChatBubbleWrapper mine={true} key={item.id}>
+            <ChatBubble mine={true}>{item.content}</ChatBubble>
+            <ChatWriter mine={true}>
+              {item.nickname}
+              <span onClick={handleClickLike(item)}>
+                <i
+                  className={item.liked ? "xi-heart xi-x" : "xi-heart-o xi-x"}
+                  style={{ color: item.liked ? "red" : "black" }}
+                />{" "}
+                {item.likeCount}
+              </span>
+            </ChatWriter>
+          </ChatBubbleWrapper>
+        ))}
       </>
     );
   };
