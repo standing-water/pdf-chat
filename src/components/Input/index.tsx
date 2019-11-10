@@ -23,8 +23,8 @@ const Wrapper = styled.div<{
   justify-content: space-between;
   padding: 2px 5px 2px 1rem;
 
-  ${props => props.styles}
-  border-radius: ${props => (props.shape === "ROUND" ? "50px" : "4px")};
+  ${(props) => props.styles}
+  border-radius: ${(props) => (props.shape === "ROUND" ? "50px" : "4px")};
 
   > i {
     color: ${DARK_GREY};
@@ -61,21 +61,11 @@ const Icon = styled.i`
 `;
 
 export const Input = React.forwardRef<HTMLInputElement, Props>(
-  (
-    {
-      shape = "SQUARE",
-      icon,
-      styles,
-      buttonIcon,
-      onClickButton,
-      ...inputProps
-    },
-    ref
-  ) => {
+  ({ shape = "SQUARE", icon, styles, buttonIcon, onClickButton, ...inputProps }, ref) => {
     return (
       <Wrapper styles={styles} shape={shape}>
         {icon && <Icon className={icon} />}
-        <StyledInput ref={ref} {...inputProps}></StyledInput>
+        <StyledInput {...inputProps} ref={ref} />
         {buttonIcon && (
           <StyledButton onClick={onClickButton}>
             <i className={buttonIcon}></i>

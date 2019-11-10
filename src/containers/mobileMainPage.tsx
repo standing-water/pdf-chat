@@ -1,18 +1,6 @@
-import React, {
-  useCallback,
-  useState,
-  useEffect,
-  useRef,
-  createRef
-} from "react";
+import React, { useCallback, useState, useEffect, useRef, createRef } from "react";
 import { useRouteMatch } from "react-router-dom";
-import {
-  animateScroll,
-  Events,
-  scrollSpy,
-  scroller,
-  Element
-} from "react-scroll";
+import { animateScroll, Events, scrollSpy, scroller, Element } from "react-scroll";
 import { Input, Button } from "components";
 import { render } from "react-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -27,14 +15,7 @@ import Modal from "react-modal";
 import { getQRCode } from "apis/qrcode";
 
 import { Document, Page } from "react-pdf/dist/entry.webpack";
-import {
-  PdfFooter,
-  PaginatorContainer,
-  Paginator,
-  ModalBody,
-  ModalFooter,
-  PdfContent
-} from "./mainPageStyle";
+import { PdfFooter, PaginatorContainer, Paginator, ModalBody, ModalFooter, PdfContent } from "./mainPageStyle";
 import {
   MainPageWrapper,
   PdfWrapper,
@@ -86,13 +67,9 @@ export const MobileMainPage: React.FC<Props> = ({}) => {
     height: 0
   });
   const dispatch = useDispatch();
-  const presentationStore = useSelector(
-    (state: AppState) => state.presentation
-  );
+  const presentationStore = useSelector((state: AppState) => state.presentation);
   const { questions } = presentationStore;
-  const { isFetchingCurrentRoom, currentRoom } = useSelector(
-    (state: AppState) => state.presentation
-  );
+  const { isFetchingCurrentRoom, currentRoom } = useSelector((state: AppState) => state.presentation);
 
   useEffect(() => {
     async function fetchPDF() {
@@ -162,22 +139,19 @@ export const MobileMainPage: React.FC<Props> = ({}) => {
   }, []);
 
   const onClickSendQuestion = () => {
-    dispatch(
-      createQuestionRequest({
-        present_id: 1,
-        page: 4,
-        content:
-          "dfajksdfkjaksdjflkajsdlkfjasdlkjasdsdkfaksjdfklajsdflkjasdkfjasdklfjaskdlfjasdklfjasdklfjaskdlfjf\nskldfkjs"
-      })
-    );
-    scrollToBottom();
-    inputRef.current!.focus();
+    if (presentationStore.user) {
+      dispatch(
+        createQuestionRequest({ token: presentationStore.user.token, presentationId: 1, page: 4, content: "df" })
+      );
+      scrollToBottom();
+      inputRef.current!.focus();
+    }
   };
 
   const renderChat = () => {
     return (
       <>
-        {questions.map(x => (
+        {questions.map((x) => (
           <ChatBubbleWrapper mine={true}>
             <ChatBubble mine={true}>{x.content}</ChatBubble>
             <ChatWriter mine={true}>신현종</ChatWriter>
@@ -193,20 +167,12 @@ export const MobileMainPage: React.FC<Props> = ({}) => {
         <ReactResizeDetector handleWidth handleHeight onResize={handleResize}>
           <PdfContentWrapper>
             <PaginatorContainer>
-              <Paginator direction="LEFT" onClick={goToPrevPage}></Paginator>
-              <Paginator direction="RIGHT" onClick={goToNextPage}></Paginator>
+              <Paginator direction='LEFT' onClick={goToPrevPage}></Paginator>
+              <Paginator direction='RIGHT' onClick={goToNextPage}></Paginator>
             </PaginatorContainer>
-            <Document
-              file={Pdf}
-              onLoadError={err => console.log(err)}
-              onLoadSuccess={onDocumentLoadSuccess}
-            >
+            <Document file={Pdf} onLoadError={(err) => console.log(err)} onLoadSuccess={onDocumentLoadSuccess}>
               <PdfContent>
-                <Page
-                  pageNumber={pageNumber}
-                  width={resizePosition.width - 10}
-                  height={resizePosition.height - 10}
-                />
+                <Page pageNumber={pageNumber} width={resizePosition.width - 10} height={resizePosition.height - 10} />
               </PdfContent>
             </Document>
           </PdfContentWrapper>
@@ -214,28 +180,19 @@ export const MobileMainPage: React.FC<Props> = ({}) => {
       </PdfWrapper>
       <ChatWrapper>
         <TabWrapper>
-          {tabData.map(x => (
-            <TabItem
-              onClick={() => setTabState(x.id)}
-              tabId={x.id}
-              tabState={tabState}
-            >
+          {tabData.map((x) => (
+            <TabItem onClick={() => setTabState(x.id)} tabId={x.id} tabState={tabState}>
               <i className={x.icon}></i>
             </TabItem>
           ))}
         </TabWrapper>
-        <ChatContentWrapper id="chatContainer" ref={chatContainerRef}>
+        <ChatContentWrapper id='chatContainer' ref={chatContainerRef}>
           {tabState === 0 ? renderChat() : <div>질문</div>}
         </ChatContentWrapper>
       </ChatWrapper>
-      <Element name="input">
+      <Element name='input'>
         <InputWrapper>
-          <Input
-            ref={inputRef}
-            shape="ROUND"
-            buttonIcon="xi-arrow-up"
-            onClickButton={onClickSendQuestion}
-          ></Input>
+          <Input ref={inputRef} shape='ROUND' buttonIcon='xi-arrow-up' onClickButton={onClickSendQuestion}></Input>
         </InputWrapper>
       </Element>
     </MainPageWrapper>

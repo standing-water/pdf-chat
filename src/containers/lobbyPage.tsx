@@ -5,7 +5,7 @@ import { useHistory } from "react-router-dom";
 
 import Spinner from "react-activity/lib/Spinner";
 
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 import { LIGHT_GREY, MAIN_COLOR } from "constants/colors";
 import { getPresentationsRequest, createPresentationRequest } from "actions/presentAction";
@@ -61,6 +61,8 @@ const MainContainer = styled.div<{ isExtends: boolean }>`
   border-radius: 10px 10px 0 0;
   background: white;
   box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
+  max-height: 100%;
+  overflow-y: auto;
 `;
 
 const RoomList = styled.ul`
@@ -144,13 +146,17 @@ export const LobbyPage: React.FC<Props> = () => {
         <form onSubmit={onSubmit}>
           <Input placeholder='Room title' name='title' ref={register} />
           <input ref={register} type='file' name='files' accept='.pdf' />
-          <Button buttonType='SECONDARY' type='submit'>
-            Cancel
-          </Button>
-          <Button buttonType='PRIMARY' type='submit'>
+          <Button
+            buttonType='PRIMARY'
+            type='submit'
+            styles={css`
+              width: 100%;
+              margin-top: 0.5rem;
+              font-size: 16px;
+            `}
+          >
             Create
           </Button>
-          <img src={getQRCode("https://naver.com")} />
         </form>
       </>
     );
@@ -166,11 +172,13 @@ export const LobbyPage: React.FC<Props> = () => {
           </LoadingContainer>
         ) : (
           <RoomList>
-            {presentationStore.rooms.map((item) => (
-              <Room key={item.enterId} onClick={handleClickRoom(item.enterId)}>
-                {item.name}
-              </Room>
-            ))}
+            {[...presentationStore.rooms]
+              .sort((a, b) => b.id - a.id)
+              .map((item) => (
+                <Room key={item.enterId} onClick={handleClickRoom(item.enterId)}>
+                  {item.name}
+                </Room>
+              ))}
           </RoomList>
         )}
       </>
