@@ -51,3 +51,27 @@ export const login = (presentationId: number) =>
   });
 
 export const sendWS = (ws: WebSocket, data: { message: string; parameter?: any }) => ws.send(JSON.stringify(data));
+
+export const like = (token: string, presentationId: number, questionId: number) => {
+  return axios.post(`${API_URL}/presentation/${presentationId}/question/${questionId}/like`, null, {
+    headers: {
+      Authorization: `bearer ${token}`,
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,OPTIONS",
+      Accept: "application/json",
+      "Content-Type": "application/x-www-form-urlencoded"
+    }
+  });
+};
+
+export const dislike = (token: string, presentationId: number, questionId: number) => {
+  return axios.delete(`${API_URL}/presentation/${presentationId}/question/${questionId}/like`, {
+    headers: {
+      Authorization: `bearer ${token}`,
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,OPTIONS",
+      Accept: "application/json",
+      "Content-Type": "application/x-www-form-urlencoded"
+    }
+  });
+};

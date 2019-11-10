@@ -78,8 +78,9 @@ export const PdfFooter = styled.div`
 export const ChatWrapper = styled.div`
   display: flex;
   flex-basis: 400px;
-  border: 3px yellow solid;
   flex-direction: column;
+  padding: 10px;
+  padding-bottom: 0;
 `;
 
 export const ChatContentWrapper = styled.div`
@@ -93,7 +94,8 @@ export const InputWrapper = styled.div`
 `;
 
 export const TabWrapper = styled.div`
-  flex: 1;
+  /* flex: 1; */
+  height: 50px;
   display: flex;
   flex-direction: row;
   width: 100%;
@@ -104,7 +106,6 @@ export const TabItem = styled.div`
   justify-content: center;
   align-items: center;
   flex: 1;
-  border: 2px solid green;
 `;
 
 export const ModalBody = styled.div`

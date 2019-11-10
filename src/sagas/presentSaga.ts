@@ -7,10 +7,20 @@ import {
   CREATE_QUESTION,
   ENTER_ROOM,
   LOGIN,
-  GET_QUESTIONS
+  GET_QUESTIONS,
+  LIKE,
+  DISLIKE
 } from "constants/presentConstants";
-import { getPresentation, createPresentation, enterRoom, login, createQuestion, getQuestions } from "apis/presentation";
-import { getQuestionsSuccess } from "../actions/presentAction";
+import {
+  getPresentation,
+  createPresentation,
+  enterRoom,
+  login,
+  createQuestion,
+  getQuestions,
+  like,
+  dislike
+} from "apis/presentation";
 
 import {
   getPresentationsRequest,
@@ -20,7 +30,8 @@ import {
   createQuestionSuccess,
   createQuestionFail,
   loginSuccess,
-  getQuestionsRequest
+  getQuestionsRequest,
+  getQuestionsSuccess
 } from "actions/presentAction";
 
 function* watchGetPresentation(action: any) {
@@ -85,6 +96,22 @@ function* watchLogin(action: ActionWithPayload<{ presentationId: number }>) {
   } catch (err) {}
 }
 
+function* watchLike(action: ActionWithPayload<{ token: string; presentationId: number; questionId: number }>) {
+  const { token, presentationId, questionId } = action.payload;
+  try {
+    yield call(like, token, presentationId, questionId);
+    yield put(getQuestionsRequest({ token, presentationId }));
+  } catch (err) {}
+}
+
+function* watchDislike(action: ActionWithPayload<{ token: string; presentationId: number; questionId: number }>) {
+  const { token, presentationId, questionId } = action.payload;
+  try {
+    yield call(dislike, token, presentationId, questionId);
+    yield put(getQuestionsRequest({ token, presentationId }));
+  } catch (err) {}
+}
+
 export default function* presentSaga() {
   yield all([
     takeLatest(GET_PRESENTATIONS.REQUEST, watchGetPresentation),
@@ -92,6 +119,8 @@ export default function* presentSaga() {
     takeLatest(ENTER_ROOM.REQUEST, watchEnterRoom),
     takeLatest(GET_QUESTIONS.REQUEST, watchGetQuestion),
     takeLatest(CREATE_QUESTION.REQUEST, watchCreateQuestion),
-    takeLatest(LOGIN.REQUEST, watchLogin)
+    takeLatest(LOGIN.REQUEST, watchLogin),
+    takeLatest(LIKE.REQUEST, watchLike),
+    takeLatest(DISLIKE.REQUEST, watchDislike)
   ]);
 }

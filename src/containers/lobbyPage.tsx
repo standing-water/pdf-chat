@@ -172,11 +172,13 @@ export const LobbyPage: React.FC<Props> = () => {
           </LoadingContainer>
         ) : (
           <RoomList>
-            {presentationStore.rooms.map((item) => (
-              <Room key={item.enterId} onClick={handleClickRoom(item.enterId)}>
-                {item.name}
-              </Room>
-            ))}
+            {[...presentationStore.rooms]
+              .sort((a, b) => b.id - a.id)
+              .map((item) => (
+                <Room key={item.enterId} onClick={handleClickRoom(item.enterId)}>
+                  {item.name}
+                </Room>
+              ))}
           </RoomList>
         )}
       </>

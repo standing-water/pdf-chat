@@ -33,3 +33,15 @@ export const LOGIN = {
   SUCCESS: "LOGIN_SUCCESS",
   FAIL: "LOGIN_FAIL"
 };
+
+export const LIKE = {
+  REQUEST: "LIKE_REQUEST",
+  SUCCESS: "LIKE_SUCCESS",
+  FAIL: "LIKE_FAIL"
+};
+
+export const DISLIKE = {
+  REQUEST: "DISLIKE_REQUEST",
+  SUCCESS: "DISLIKE_SUCCESS",
+  FAIL: "DISLIKE_FAIL"
+};

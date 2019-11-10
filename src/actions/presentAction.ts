@@ -5,7 +5,9 @@ import {
   ENTER_ROOM,
   CREATE_QUESTION,
   LOGIN,
-  GET_QUESTIONS
+  GET_QUESTIONS,
+  LIKE,
+  DISLIKE
 } from "constants/presentConstants";
 
 export const getPresentationsRequest = createAction(GET_PRESENTATIONS.REQUEST);
@@ -39,3 +41,13 @@ export const createQuestionFail = createAction(CREATE_QUESTION.FAIL);
 export const loginRequest = createAction<{ presentationId: number }>(LOGIN.REQUEST);
 export const loginSuccess = createAction<{ user: User }>(LOGIN.SUCCESS);
 export const loginFail = createAction(LOGIN.FAIL);
+
+export const likeRequest = createAction<{ token: string; presentationId: number; questionId: number }>(LIKE.REQUEST);
+export const likeSuccess = createAction(LIKE.SUCCESS);
+export const likeFail = createAction(LIKE.FAIL);
+
+export const dislikeRequest = createAction<{ token: string; presentationId: number; questionId: number }>(
+  DISLIKE.REQUEST
+);
+export const dislikeSuccess = createAction(DISLIKE.SUCCESS);
+export const dislikeFail = createAction(DISLIKE.FAIL);

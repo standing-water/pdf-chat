@@ -29,7 +29,7 @@ import {
 } from "./mainPageStyle";
 import { getQRCode } from "apis/qrcode";
 import { sendWS } from "apis/presentation";
-import { enterRoomRequest, loginRequest } from "actions/presentAction";
+import { enterRoomRequest, loginRequest, likeRequest, dislikeRequest } from "actions/presentAction";
 import { WS_URL } from "constants/server";
 import { createQuestion } from "../apis/presentation";
 import { createQuestionRequest, getQuestionsRequest } from "../actions/presentAction";
@@ -46,6 +46,11 @@ const QuestionBox = styled.div`
   & + & {
     margin-top: 1rem;
   }
+`;
+
+const QuestionFooter = styled.div`
+  font-size: 12px;
+  margin-top: 10px;
 `;
 
 const UserText = styled.div`
@@ -111,7 +116,7 @@ export const MainPage: React.FC<Props> = ({}) => {
 
     if (currentRoom) {
       dispatch(loginRequest({ presentationId: currentRoom.id }));
-      setActiveUser(currentRoom.activeUserCount);
+      setActiveUser(currentRoom.activeUserCount + 1);
     }
   }, [currentRoom, dispatch]);
 
@@ -207,6 +212,14 @@ export const MainPage: React.FC<Props> = ({}) => {
     return null;
   }
 
+  const handleClickLike = (question: Question) => () => {
+    if (question.liked) {
+      dispatch(dislikeRequest({ token: user.token, presentationId: currentRoom.id, questionId: question.id }));
+    } else {
+      dispatch(likeRequest({ token: user.token, presentationId: currentRoom.id, questionId: question.id }));
+    }
+  };
+
   return (
     <>
       <MainPageWrapper onKeyDown={handleKeyDown}>
@@ -269,6 +282,11 @@ export const MainPage: React.FC<Props> = ({}) => {
                 <QuestionBox key={item.id}>
                   <UserText>{item.nickname}</UserText>
                   {item.content}
+                  <QuestionFooter>
+                    <span onClick={handleClickLike(item)}>
+                      <i className={item.liked ? "xi-heart xi-x" : "xi-heart-o xi-x"} /> {item.likeCount}
+                    </span>
+                  </QuestionFooter>
                 </QuestionBox>
               ))}
           </ChatContentWrapper>

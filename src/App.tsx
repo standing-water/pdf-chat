@@ -29,6 +29,13 @@ const App: React.FC<Props> = () => {
       ws.send(JSON.stringify(data));
     }, 30000);
 
+    window.addEventListener("beforeunload", (event) => {
+      const data = {
+        message: "unsubscribe"
+      };
+      ws.send(JSON.stringify(data));
+    });
+
     return () => {
       clearInterval(id);
     };
