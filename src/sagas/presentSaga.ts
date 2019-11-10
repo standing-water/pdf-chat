@@ -96,8 +96,14 @@ function* watchCreateQuestion(
 function* watchLogin(action: ActionWithPayload<{ presentationId: number }>) {
   const { presentationId } = action.payload;
   try {
-    const res = yield call(login, presentationId);
-    yield put(loginSuccess({ user: res.data.data }));
+    const local = localStorage.getItem(String(presentationId));
+    if (!local) {
+      const res = yield call(login, presentationId);
+      yield put(loginSuccess({ user: res.data.data }));
+      localStorage.setItem(String(presentationId), JSON.stringify(res.data.data));
+    } else {
+      yield put(loginSuccess({ user: JSON.parse(local) }));
+    }
   } catch (err) {}
 }
 

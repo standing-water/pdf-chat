@@ -128,6 +128,7 @@ export const MainPage: React.FC<Props> = ({}) => {
       if (!user) {
         dispatch(loginRequest({ presentationId: currentRoom.id }));
       }
+      setPageNumber(currentRoom.currentPage);
       setActiveUser(currentRoom.activeUserCount + 1);
     }
   }, [currentRoom, dispatch, user]);
