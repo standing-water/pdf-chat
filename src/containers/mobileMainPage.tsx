@@ -1,18 +1,6 @@
-import React, {
-  useCallback,
-  useState,
-  useEffect,
-  useRef,
-  createRef
-} from "react";
+import React, { useCallback, useState, useEffect, useRef, createRef } from "react";
 import { useRouteMatch } from "react-router-dom";
-import {
-  animateScroll,
-  Events,
-  scrollSpy,
-  scroller,
-  Element
-} from "react-scroll";
+import { animateScroll, Events, scrollSpy, scroller, Element } from "react-scroll";
 import { Input, Button } from "components";
 import { render } from "react-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -28,14 +16,7 @@ import Modal from "react-modal";
 import { getQRCode } from "apis/qrcode";
 
 import { Document, Page } from "react-pdf/dist/entry.webpack";
-import {
-  PdfFooter,
-  PaginatorContainer,
-  Paginator,
-  ModalBody,
-  ModalFooter,
-  PdfContent
-} from "./mainPageStyle";
+import { PdfFooter, PaginatorContainer, Paginator, ModalBody, ModalFooter, PdfContent } from "./mainPageStyle";
 import {
   MainPageWrapper,
   PdfWrapper,
@@ -56,7 +37,8 @@ import {
   getQuestionsRequest,
   loginRequest,
   likeRequest,
-  dislikeRequest
+  dislikeRequest,
+  changePageRequest
 } from "actions/presentAction";
 import { sendWS } from "apis/presentation";
 
@@ -95,13 +77,9 @@ export const MobileMainPage: React.FC<Props> = ({}) => {
   });
   const dispatch = useDispatch();
   const [activeUser, setActiveUser] = useState(0);
-  const {
-    isFetchingCurrentRoom,
-    currentRoom,
-    ws,
-    user,
-    questions
-  } = useSelector((state: AppState) => state.presentation);
+  const { isFetchingCurrentRoom, currentRoom, ws, user, questions } = useSelector(
+    (state: AppState) => state.presentation
+  );
 
   ws.onmessage = (event: MessageEvent) => {
     const data = JSON.parse(event.data);
@@ -124,6 +102,9 @@ export const MobileMainPage: React.FC<Props> = ({}) => {
       }
       case "active_user": {
         return setActiveUser(data.data.count);
+      }
+      case "change_page": {
+        return setPageNumber(data.data.page);
       }
     }
   };
@@ -150,10 +131,12 @@ export const MobileMainPage: React.FC<Props> = ({}) => {
     scrollSpy.update();
 
     if (currentRoom) {
-      dispatch(loginRequest({ presentationId: currentRoom.id }));
+      if (!user) {
+        dispatch(loginRequest({ presentationId: currentRoom.id }));
+      }
       setActiveUser(currentRoom.activeUserCount + 1);
     }
-  }, [currentRoom, dispatch]);
+  }, [currentRoom, dispatch, user]);
 
   useEffect(() => {
     if (user && currentRoom) {
@@ -194,9 +177,15 @@ export const MobileMainPage: React.FC<Props> = ({}) => {
 
   const goToPrevPage = () => {
     setPageNumber(pageNumber - 1);
+    if (currentRoom && user && user.nickname === "발표자") {
+      dispatch(changePageRequest({ token: user.token, presentationId: currentRoom.id, page: pageNumber - 1 }));
+    }
   };
   const goToNextPage = () => {
     setPageNumber(pageNumber + 1);
+    if (currentRoom && user && user.nickname === "발표자") {
+      dispatch(changePageRequest({ token: user.token, presentationId: currentRoom.id, page: pageNumber + 1 }));
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -275,27 +264,21 @@ export const MobileMainPage: React.FC<Props> = ({}) => {
   const renderChat = () => {
     return (
       <>
-        {orderBy([...questions], ["likeCount", "id"], ["desc", "desc"]).map(
-          item => (
-            <ChatBubbleWrapper
-              mine={item.myQuestion}
-              name={`chat-${item.id}`}
-              key={item.id}
-            >
-              <ChatBubble mine={item.myQuestion}>{item.content}</ChatBubble>
-              <ChatWriter mine={item.myQuestion}>
-                {item.nickname}
-                <span onClick={handleClickLike(item)}>
-                  <i
-                    className={item.liked ? "xi-heart xi-x" : "xi-heart-o xi-x"}
-                    style={{ color: item.liked ? "red" : "black" }}
-                  />{" "}
-                  {item.likeCount}
-                </span>
-              </ChatWriter>
-            </ChatBubbleWrapper>
-          )
-        )}
+        {orderBy([...questions], ["likeCount", "id"], ["desc", "desc"]).map((item) => (
+          <ChatBubbleWrapper mine={item.myQuestion} name={`chat-${item.id}`} key={item.id}>
+            <ChatBubble mine={item.myQuestion}>{item.content}</ChatBubble>
+            <ChatWriter mine={item.myQuestion}>
+              {item.nickname}
+              <span onClick={handleClickLike(item)}>
+                <i
+                  className={item.liked ? "xi-heart xi-x" : "xi-heart-o xi-x"}
+                  style={{ color: item.liked ? "red" : "black" }}
+                />{" "}
+                {item.likeCount}
+              </span>
+            </ChatWriter>
+          </ChatBubbleWrapper>
+        ))}
       </>
     );
   };
@@ -306,20 +289,12 @@ export const MobileMainPage: React.FC<Props> = ({}) => {
         <ReactResizeDetector handleWidth handleHeight onResize={handleResize}>
           <PdfContentWrapper>
             <PaginatorContainer>
-              <Paginator direction="LEFT" onClick={goToPrevPage}></Paginator>
-              <Paginator direction="RIGHT" onClick={goToNextPage}></Paginator>
+              <Paginator direction='LEFT' onClick={goToPrevPage}></Paginator>
+              <Paginator direction='RIGHT' onClick={goToNextPage}></Paginator>
             </PaginatorContainer>
-            <Document
-              file={Pdf}
-              onLoadError={err => console.log(err)}
-              onLoadSuccess={onDocumentLoadSuccess}
-            >
+            <Document file={Pdf} onLoadError={(err) => console.log(err)} onLoadSuccess={onDocumentLoadSuccess}>
               <PdfContent>
-                <Page
-                  pageNumber={pageNumber}
-                  width={resizePosition.width - 10}
-                  height={resizePosition.height - 10}
-                />
+                <Page pageNumber={pageNumber} width={resizePosition.width - 10} height={resizePosition.height - 10} />
               </PdfContent>
             </Document>
           </PdfContentWrapper>
@@ -327,29 +302,20 @@ export const MobileMainPage: React.FC<Props> = ({}) => {
       </PdfWrapper>
       <ChatWrapper>
         <TabWrapper>
-          {tabData.map(x => (
-            <TabItem
-              onClick={() => setTabState(x.id)}
-              tabId={x.id}
-              tabState={tabState}
-            >
+          {tabData.map((x) => (
+            <TabItem onClick={() => setTabState(x.id)} tabId={x.id} tabState={tabState}>
               <i className={x.icon}></i>
             </TabItem>
           ))}
         </TabWrapper>
         <div>Users: {activeUser}</div>
-        <ChatContentWrapper id="chatContainer" ref={chatContainerRef}>
+        <ChatContentWrapper id='chatContainer' ref={chatContainerRef}>
           {tabState === 0 ? renderChat() : <div>질문</div>}
         </ChatContentWrapper>
       </ChatWrapper>
-      <Element name="input">
+      <Element name='input'>
         <InputWrapper>
-          <Input
-            ref={inputRef}
-            shape="ROUND"
-            buttonIcon="xi-arrow-up"
-            onClickButton={onClickSendQuestion}
-          />
+          <Input ref={inputRef} shape='ROUND' buttonIcon='xi-arrow-up' onClickButton={onClickSendQuestion} />
         </InputWrapper>
       </Element>
     </MainPageWrapper>
