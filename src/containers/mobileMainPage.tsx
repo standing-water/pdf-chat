@@ -270,6 +270,7 @@ export const MobileMainPage: React.FC<Props> = ({}) => {
             </TabItem>
           ))}
         </TabWrapper>
+        <div>Active Users: {activeUser}</div>
         <ChatContentWrapper id='chatContainer' ref={chatContainerRef}>
           {tabState === 0 ? renderChat() : <div>질문</div>}
         </ChatContentWrapper>
