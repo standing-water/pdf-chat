@@ -49,6 +49,7 @@ function* watchCreatePresentation(action: ActionWithPayload<{ name: string; file
   try {
     const res = yield call(createPresentation, name, file);
     const data = res.data.data;
+    localStorage.setItem(String(res.data.data.id), JSON.stringify({ token: res.data.data.token, nickname: "발표자" }));
     yield put(createPresentationSuccess({ ...data }));
     yield put(getPresentationsRequest());
   } catch (err) {

@@ -125,13 +125,13 @@ export const MainPage: React.FC<Props> = ({}) => {
     fetchPDF();
 
     if (currentRoom) {
-      if (!user) {
-        dispatch(loginRequest({ presentationId: currentRoom.id }));
-      }
+      // if (!user) {
+      dispatch(loginRequest({ presentationId: currentRoom.id }));
+      // }
       setPageNumber(currentRoom.currentPage);
       setActiveUser(currentRoom.activeUserCount + 1);
     }
-  }, [currentRoom, dispatch, user]);
+  }, [currentRoom, dispatch]);
 
   useEffect(() => {
     if (user && currentRoom) {
