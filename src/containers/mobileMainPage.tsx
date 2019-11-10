@@ -131,12 +131,10 @@ export const MobileMainPage: React.FC<Props> = ({}) => {
     scrollSpy.update();
 
     if (currentRoom) {
-      if (!user) {
-        dispatch(loginRequest({ presentationId: currentRoom.id }));
-      }
+      dispatch(loginRequest({ presentationId: currentRoom.id }));
       setActiveUser(currentRoom.activeUserCount + 1);
     }
-  }, [currentRoom, dispatch, user]);
+  }, [currentRoom, dispatch]);
 
   useEffect(() => {
     if (user && currentRoom) {
